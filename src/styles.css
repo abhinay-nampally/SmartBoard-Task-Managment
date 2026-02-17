@@ -458,3 +458,8 @@ margin-bottom: 20px;
   from{ transform: translateX(100px); opacity:0;}
   to{ transform: translateX(0); opacity:1;}
 }
+/* .counter-animate{
+  transform: scale(1.08);
+  transition: .3s;
+  color:#1e88e5;
+} */

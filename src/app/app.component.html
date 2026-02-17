@@ -27,7 +27,8 @@
      [cdkDropListData]="tasks"
      [cdkDropListConnectedTo]="['progressList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'new')">
-        <h3 class="column-title">NEW TASK({{newTasks.length}})</h3>
+        <h3 class="column-title"
+    [ngClass]="{'counter-animate': counterUpdate}">NEW TASK ({{newCount}})</h3>
         <ng-container *ngFor="let t of tasks;let i=index" >
         
             <div class="card" *ngIf="t.status ==='new'" cdkDrag
@@ -56,7 +57,7 @@
      [cdkDropListData]="tasks"
      [cdkDropListConnectedTo]="['newList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'progress')">
-        <h3 class="column-title">IN PROGRESS ({{inProgressTasks.length}})</h3>
+        <h3 class="column-title"[ngClass]="{'counter-animate': counterUpdate}">IN PROGRESS ({{progressCount}})</h3>
         <ng-container *ngFor="let t of tasks;let i=index" >
             <div class="card" *ngIf="t.status === 'progress'" cdkDrag
             [cdkDragData]="t">
@@ -78,7 +79,7 @@
     [cdkDropListData]="tasks" 
     [cdkDropListConnectedTo]="['newList','progressList','deliveredList']"
     (cdkDropListDropped)="drop($event,'completed')">
-        <h3 class="column-title">COMPLETED ({{completedTasks.length}})</h3>
+       <h3 class="column-title"[ngClass]="{'counter-animate': counterUpdate}">COMPLETED ({{completedCount}})</h3>
         <ng-container *ngFor="let t of tasks;let i=index"  >
           <div class="card" *ngIf="t.status === 'completed'" cdkDrag
           [cdkDragData]="t">
@@ -100,7 +101,7 @@
     [cdkDropListData]="tasks"
     [cdkDropListConnectedTo]="['newList','progressList','completedList']"
     (cdkDropListDropped)="drop($event,'delivered')">
-       <h3 class="column-title">DELIVERED ({{deliveredTasks.length}})</h3>
+       <h3 class="column-title"[ngClass]="{'counter-animate': counterUpdate}">DELIVERED ({{deliveredCount}})</h3>
         <ng-container *ngFor="let t of tasks;let i=index"  >
             <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
             [cdkDragData]="t">

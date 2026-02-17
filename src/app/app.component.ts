@@ -27,6 +27,7 @@ export class AppComponent {
   showSuccessPopup = false;
   showUpdatePopup = false;
   showDeletePopup = false;
+  counterUpdate =false;
 
 
 
@@ -50,7 +51,7 @@ export class AppComponent {
     setTimeout(()=>{
     this.showSuccessPopup = false;
     },2000);
-
+    this.flashCounter();
 
   } 
   editTask(i:number){
@@ -62,6 +63,7 @@ export class AppComponent {
     drop(event: CdkDragDrop<any[]>,status:string){
       const task = event.item.data;
       task.status = status;
+       this.flashCounter();
     }
   openAddModal(){
   this.modalMode = 'add';
@@ -77,6 +79,7 @@ closeModal(){
 cancelDelete(){
   this.deleteIndex = null;
   this.showDeleteModal = false;
+   
 }
 openEditModal(i:number){
   this.modalMode = 'edit';
@@ -97,6 +100,7 @@ updateTask(){
     this.showUpdatePopup = true;
     setTimeout(()=> this.showUpdatePopup=false, 2000);
   }
+  this.flashCounter();
 }
 openDeleteModal(i:number){
   this.deleteIndex = i;
@@ -109,10 +113,30 @@ confirmDelete(){
     this.deleteIndex = null;
     this.showDeleteModal = false;
 
-    /* professional popup */
+    
     this.showDeletePopup = true;
     setTimeout(()=> this.showDeletePopup=false, 2000);
   }
+  this.flashCounter();
 }
   
+get newCount() {
+  return this.tasks.filter(t => t.status === 'new').length;
+}
+
+get progressCount() {
+  return this.tasks.filter(t => t.status === 'progress').length;
+}
+
+get completedCount() {
+  return this.tasks.filter(t => t.status === 'completed').length;
+}
+
+get deliveredCount() {
+  return this.tasks.filter(t => t.status === 'delivered').length;
+}
+flashCounter(){
+  this.counterUpdate = true;
+  setTimeout(()=> this.counterUpdate = false, 600);
+}
 }
