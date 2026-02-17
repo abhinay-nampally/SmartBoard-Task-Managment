@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { NgFor, NgClass, NgIf } from '@angular/common';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop ,moveItemInArray,transferArrayItem} from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -27,14 +27,18 @@ export class AppComponent {
   showSuccessPopup = false;
   showUpdatePopup = false;
   showDeletePopup = false;
-  counterUpdate =false;
 
 
 
   tasks=[
-    {title:'', desc:'',priority:'',status:''
+    {title:'Design UI Wireframe', desc:'Create Login Page',priority:'High',status:'new'
     },
-    
+    {title:'Task Sorting Feature', desc:'Move tasks',priority:'Medium',status:'progress'
+    },
+    {title:'Angular Setup', desc:'Install Angular',priority:'Low',status:'completed'
+    },
+    {title:'User Testing', desc:'Check localhost',priority:'Low',status:'delivered'
+    }
   ];
   
   addTask(){
@@ -51,7 +55,7 @@ export class AppComponent {
     setTimeout(()=>{
     this.showSuccessPopup = false;
     },2000);
-    this.flashCounter();
+
 
   } 
   editTask(i:number){
@@ -60,11 +64,43 @@ export class AppComponent {
   }
   
   
-    drop(event: CdkDragDrop<any[]>,status:string){
-      const task = event.item.data;
-      task.status = status;
-       this.flashCounter();
-    }
+    drop(event: CdkDragDrop<any[]>, status: string) {
+
+  const draggedTask = event.item.data;
+
+  
+  if (draggedTask.status !== status) {
+    draggedTask.status = status;
+  }
+
+  
+  const columnTasks = this.tasks.filter(t => t.status === status);
+
+  const fromIndex = columnTasks.findIndex(t => t === draggedTask);
+
+  
+  columnTasks.splice(fromIndex, 1);
+  columnTasks.splice(event.currentIndex, 0, draggedTask);
+
+  
+  this.tasks = [
+    ...this.tasks.filter(t => t.status !== status),
+    ...columnTasks
+  ];
+
+
+}
+getTasksByStatus(status: string) {
+  return this.tasks.filter(task => task.status === status);
+}
+counterUpdated = false;
+
+flashCounter() {
+  this.counterUpdated = true;
+  setTimeout(() => {
+    this.counterUpdated = false;
+  }, 600);
+}
   openAddModal(){
   this.modalMode = 'add';
   this.newTask = { title:'', desc:'', priority:'Low',status:'new' };
@@ -79,7 +115,6 @@ closeModal(){
 cancelDelete(){
   this.deleteIndex = null;
   this.showDeleteModal = false;
-   
 }
 openEditModal(i:number){
   this.modalMode = 'edit';
@@ -100,7 +135,6 @@ updateTask(){
     this.showUpdatePopup = true;
     setTimeout(()=> this.showUpdatePopup=false, 2000);
   }
-  this.flashCounter();
 }
 openDeleteModal(i:number){
   this.deleteIndex = i;
@@ -117,26 +151,6 @@ confirmDelete(){
     this.showDeletePopup = true;
     setTimeout(()=> this.showDeletePopup=false, 2000);
   }
-  this.flashCounter();
 }
   
-get newCount() {
-  return this.tasks.filter(t => t.status === 'new').length;
-}
-
-get progressCount() {
-  return this.tasks.filter(t => t.status === 'progress').length;
-}
-
-get completedCount() {
-  return this.tasks.filter(t => t.status === 'completed').length;
-}
-
-get deliveredCount() {
-  return this.tasks.filter(t => t.status === 'delivered').length;
-}
-flashCounter(){
-  this.counterUpdate = true;
-  setTimeout(()=> this.counterUpdate = false, 600);
-}
 }
