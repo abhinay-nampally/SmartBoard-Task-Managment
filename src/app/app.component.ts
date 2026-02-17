@@ -31,14 +31,9 @@ export class AppComponent {
 
 
   tasks=[
-    {title:'Design UI Wireframe', desc:'Create Login Page',priority:'High',status:'new'
+    {title:'', desc:'',priority:'',status:''
     },
-    {title:'Task Sorting Feature', desc:'Move tasks',priority:'Medium',status:'progress'
-    },
-    {title:'Angular Setup', desc:'Install Angular',priority:'Low',status:'completed'
-    },
-    {title:'User Testing', desc:'Check localhost',priority:'Low',status:'delivered'
-    }
+    
   ];
   
   addTask(){
