@@ -1,4 +1,31 @@
     <h1 class="page-title">Agile Task Board</h1>
+
+<div class="toolbar">
+  <div class="toolbar-right">
+    <button (click)="showFilter = !showFilter" class="filter-btn">
+      ⚙ Filter / Sort
+    </button>
+
+    <div class="filter-panel" *ngIf="showFilter">
+      <label>Priority</label>
+      <select #prioritySel (change)="sortByPriority(prioritySel.value)">
+        <option value="">All</option>
+        <option value="High">High </option>
+        <option value="Medium">Medium </option>
+        <option value="Low">Low </option>
+      </select>
+
+      <label>Date</label>
+      <select #dateSel (change)="sortByDate(dateSel.value)">
+        <option value="asc">Earliest First</option>
+        <option value="desc">Latest First</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+
     <div class="modal-backdrop" *ngIf="showTaskModal">
 
 

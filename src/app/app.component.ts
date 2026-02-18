@@ -27,6 +27,7 @@ export class AppComponent {
   showSuccessPopup = false;
   showUpdatePopup = false;
   showDeletePopup = false;
+  showFilter = false;
 
 
 
@@ -134,6 +135,39 @@ confirmDelete(){
     this.showDeletePopup = true;
     setTimeout(()=> this.showDeletePopup=false, 2000);
   }
+}
+sortByPriority(type:string){
+
+  if(type === 'High'){
+    this.tasks.sort((a,b)=>
+      (b.priority === 'High' ? 1 : 0) -
+      (a.priority === 'High' ? 1 : 0)
+    );
+  }
+
+  else if(type === 'Medium'){
+    this.tasks.sort((a,b)=>
+      (b.priority === 'Medium' ? 1 : 0) -
+      (a.priority === 'Medium' ? 1 : 0)
+    );
+  }
+
+  else if(type === 'Low'){
+    this.tasks.sort((a,b)=>
+      (b.priority === 'Low' ? 1 : 0) -
+      (a.priority === 'Low' ? 1 : 0)
+    );
+  }
+
+}
+sortByDate(type:string){
+
+  this.tasks.sort((a,b)=>{
+    const d1 = new Date(a.date).getTime();
+    const d2 = new Date(b.date).getTime();
+    return type === 'asc' ? d1-d2 : d2-d1;
+  });
+
 }
 
   
