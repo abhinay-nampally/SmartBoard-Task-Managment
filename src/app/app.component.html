@@ -1,9 +1,10 @@
     <h1 class="page-title">Agile Task Board</h1>
+    
 
 <div class="toolbar">
   <div class="toolbar-right">
     <button (click)="showFilter = !showFilter" class="filter-btn">
-      ⚙ Filter / Sort
+      ⚙  Sort
     </button>
 
     <div class="filter-panel" *ngIf="showFilter">
@@ -84,7 +85,7 @@
      [cdkDropListData]="getTasksByStatus('new')"
      [cdkDropListConnectedTo]="['progressList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'new')">
-        <h3 class="column-title">NEW TASK({{newTasks.length}})</h3>
+        <h3 class="column-title">NEW TASK({{getTasksByStatus('new').length}})</h3>
         <ng-container *ngFor="let t of getTasksByStatus('new');let i=index" >
         
             <div class="card" *ngIf="t.status ==='new'" cdkDrag
@@ -102,6 +103,9 @@
                    
             </div>
         </ng-container>
+        <div class="empty-msg" *ngIf="getTasksByStatus('new').length === 0">
+            No tasks yet
+         </div>
         <div class="column-footer">
               <button class="add-btn" (click)="openAddModal()">+ Add Task</button>
         </div>
@@ -130,7 +134,7 @@
      [cdkDropListData]="getTasksByStatus('progress')"
      [cdkDropListConnectedTo]="['newList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'progress')">
-        <h3 class="column-title">IN PROGRESS ({{inProgressTasks.length}})</h3>
+        <h3 class="column-title">IN PROGRESS ({{getTasksByStatus('progress').length}})</h3>
         <ng-container *ngFor="let t of getTasksByStatus('progress');let i=index" >
             <div class="card" *ngIf="t.status === 'progress'" cdkDrag
             [cdkDragData]="t">
@@ -144,6 +148,9 @@
          <div class="task-date">📅 {{t.date}}</div>
         </div>
         </ng-container>
+        <div class="empty-msg" *ngIf="getTasksByStatus('progress').length === 0">
+   No tasks yet
+</div>
     </div>
 
     <div class="column" 
@@ -152,7 +159,7 @@
     [cdkDropListData]="getTasksByStatus('completed')" 
     [cdkDropListConnectedTo]="['newList','progressList','deliveredList']"
     (cdkDropListDropped)="drop($event,'completed')">
-        <h3 class="column-title">COMPLETED ({{completedTasks.length}})</h3>
+        <h3 class="column-title">COMPLETED ({{getTasksByStatus('completed').length}})</h3>
         <ng-container *ngFor="let t of getTasksByStatus('completed');let i=index"  >
           <div class="card" *ngIf="t.status === 'completed'" cdkDrag
           [cdkDragData]="t">
@@ -166,6 +173,9 @@
            <div class="task-date">📅 {{t.date}}</div>
          </div>
         </ng-container>
+        <div class="empty-msg" *ngIf="getTasksByStatus('completed').length === 0">
+   No tasks yet
+</div>
     </div>
 
     <div class="column" 
@@ -174,7 +184,7 @@
     [cdkDropListData]="getTasksByStatus('delivered')"
     [cdkDropListConnectedTo]="['newList','progressList','completedList']"
     (cdkDropListDropped)="drop($event,'delivered')">
-       <h3 class="column-title">DELIVERED ({{deliveredTasks.length}})</h3>
+       <h3 class="column-title">DELIVERED ({{getTasksByStatus('delivered').length}})</h3>
         <ng-container *ngFor="let t of getTasksByStatus('delivered');let i=index"  >
             <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
             [cdkDragData]="t">
@@ -188,6 +198,9 @@
           <div class="task-date">📅 {{t.date}}</div>
          </div>
         </ng-container>
+        <div class="empty-msg" *ngIf="getTasksByStatus('delivered').length === 0">
+   No tasks yet
+</div>
 
     </div>
 
