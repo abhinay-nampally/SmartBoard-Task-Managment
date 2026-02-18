@@ -18,7 +18,7 @@ export class AppComponent {
   showDeleteModal=false;
   deleteIndex:number | null = null;
   modalMode:'add' | 'edit' = 'add';
-  newTask={title:'',desc:'',priority:'Low',status:'new'};
+  newTask={title:'',desc:'',priority:'Low',status:'new',date:''};
   editingIndex:number| null = null;
   newTasks: any[] = [];
   inProgressTasks: any[] = [];
@@ -31,33 +31,33 @@ export class AppComponent {
 
 
   tasks=[
-    {title:'Design UI Wireframe', desc:'Create Login Page',priority:'High',status:'new'
+    {title:'Design UI Wireframe', desc:'Create Login Page',priority:'High',status:'new',date:''
     },
-    {title:'Task Sorting Feature', desc:'Move tasks',priority:'Medium',status:'progress'
+    {title:'Task Sorting Feature', desc:'Move tasks',priority:'Medium',status:'progress',date:''
     },
-    {title:'Angular Setup', desc:'Install Angular',priority:'Low',status:'completed'
+    {title:'Angular Setup', desc:'Install Angular',priority:'Low',status:'completed',date:''
     },
-    {title:'User Testing', desc:'Check localhost',priority:'Low',status:'delivered'
+    {title:'User Testing', desc:'Check localhost',priority:'Low',status:'delivered',date:''
     }
   ];
-  
-  addTask(){
-    this.tasks.push({
-      title:this.newTask.title,
-      desc:this.newTask.desc,
-      priority:this.newTask.priority,
-      status:'new'
-    });
-    this.newTask={title:'',desc:'',priority:'Low',status:'new'};
-    this.showTaskModal=false;
-    this.showSuccessPopup = true;
+ addTask(){
+  this.tasks.push({
+    title: this.newTask.title,
+    desc: this.newTask.desc,
+    priority: this.newTask.priority,
+    status: 'new',
+    date: this.newTask.date
+  });
 
-    setTimeout(()=>{
+  this.newTask = {title:'', desc:'', priority:'Low', status:'new', date:''};
+
+  this.showTaskModal=false;
+  this.showSuccessPopup = true;
+
+  setTimeout(()=>{
     this.showSuccessPopup = false;
-    },2000);
-
-
-  } 
+  },2000);
+}
   editTask(i:number){
     this.editingIndex =i;
     this.newTask={...this.tasks[i]};
@@ -83,7 +83,7 @@ export class AppComponent {
 }
   openAddModal(){
   this.modalMode = 'add';
-  this.newTask = { title:'', desc:'', priority:'Low',status:'new' };
+  this.newTask = { title:'', desc:'', priority:'Low',status:'new',date:'' };
   this.showTaskModal = true;
 }
 

@@ -185,6 +185,7 @@ margin-bottom: 20px;
   border-radius:10px;
   box-shadow:0 2px 8px rgba(0,0,0,0.08);
   transition:transform .2s ease;
+  position: relative;
 }
 
 .card:hover{
@@ -236,7 +237,7 @@ margin-bottom: 20px;
   border:none;
   background:transparent;
   cursor:pointer;
-  opacity:0;
+  opacity:1;
   transition:opacity .2s ease;
 }
 
@@ -456,4 +457,9 @@ margin-bottom: 20px;
 @keyframes slideIn{
   from{ transform: translateX(100px); opacity:0;}
   to{ transform: translateX(0); opacity:1;}
+}
+.task-date{
+  font-size:12px;
+  color:#6b7280;
+  margin-top:6px;
 }

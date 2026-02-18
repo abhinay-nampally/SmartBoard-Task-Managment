@@ -71,7 +71,7 @@
               <div class="task-title">{{t.title}}</div>
               <div class="task-desc">{{t.desc}}</div>
                <span class="badge" [ngClass]="{'high':t.priority=='High','medium':t.priority=='Medium','low':t.priority=='Low'}">{{t.priority}}</span>
-          
+              <div class="task-date">📅 {{t.date}}</div>
                    
             </div>
         </ng-container>
@@ -114,7 +114,7 @@
         <div class="task-title">{{t.title}}</div>
         <div class="task-desc">{{t.desc}}</div>
         <span class="badge" [ngClass]="{'high':t.priority=='High','medium':t.priority=='Medium','low':t.priority=='Low'}">{{t.priority}}</span>
-         
+         <div class="task-date">📅 {{t.date}}</div>
         </div>
         </ng-container>
     </div>
@@ -136,7 +136,7 @@
            <div class="task-title">{{t.title}}</div>
            <div class="task-desc">I{{t.desc}}</div>
            <span class="badge" [ngClass]="{'high':t.priority=='High','medium':t.priority=='Medium','low':t.priority=='Low'}">{{t.priority}}</span>
-         
+           <div class="task-date">📅 {{t.date}}</div>
          </div>
         </ng-container>
     </div>
@@ -158,7 +158,7 @@
           <div class="task-title">{{t.title}}</div>
           <div class="task-desc">{{t.desc}}</div>
           <span class="badge" [ngClass]="{'high':t.priority=='High','medium':t.priority=='Medium','low':t.priority=='Low'}">{{t.priority}}</span>
-         
+          <div class="task-date">📅 {{t.date}}</div>
          </div>
         </ng-container>
 
@@ -179,6 +179,7 @@
         <option>Medium</option>
         <option>Low</option>
     </select>
+    <input type="date" [(ngModel)]="newTask.date">
 
     
     <div class="modal-actions">
