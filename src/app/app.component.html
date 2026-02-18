@@ -1,9 +1,30 @@
-
     <h1 class="page-title">Agile Task Board</h1>
     <div class="modal-backdrop" *ngIf="showTaskModal">
-   <div class="modal-box">
-<h3>{{modalMode=='add' ? 'Add Task' : 'Edit Task'}}</h3>
-<input [(ngModel)]="newTask.title" placeholder="Enter Task">
+
+
+
+
+
+
+
+  <div class="modal-box">
+
+
+
+    <h3>{{modalMode=='add' ? 'Add Task' : 'Edit Task'}}</h3>
+
+
+
+
+
+
+    <input [(ngModel)]="newTask.title" placeholder="Enter Task">
+
+
+
+
+
+
     <textarea [(ngModel)]="newTask.desc" placeholder="Description"></textarea> 
 
     <select [(ngModel)]="newTask.priority">
@@ -11,18 +32,33 @@
       <option>Medium</option>
       <option>Low</option>
     </select>
-</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
 </div>
 <div class="board">
 
     <div class="column" 
      id="newList"
      cdkDropList
-     [cdkDropListData]="getTasksByStatus('new')"
+     [cdkDropListData]="tasks"
      [cdkDropListConnectedTo]="['progressList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'new')">
         <h3 class="column-title">NEW TASK({{newTasks.length}})</h3>
-        <ng-container *ngFor="let t of getTasksByStatus('new');let i=index" >
+        <ng-container *ngFor="let t of tasks;let i=index" >
         
             <div class="card" *ngIf="t.status ==='new'" cdkDrag
             [cdkDragData]="t">
@@ -43,14 +79,32 @@
               <button class="add-btn" (click)="openAddModal()">+ Add Task</button>
         </div>
     </div>
-<div class="column"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="column"
     id="progressList"
      cdkDropList
-     [cdkDropListData]="getTasksByStatus('progress')"
+     [cdkDropListData]="tasks"
      [cdkDropListConnectedTo]="['newList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'progress')">
         <h3 class="column-title">IN PROGRESS ({{inProgressTasks.length}})</h3>
-        <ng-container *ngFor="let t of getTasksByStatus('progress');let i=index" >
+        <ng-container *ngFor="let t of tasks;let i=index" >
             <div class="card" *ngIf="t.status === 'progress'" cdkDrag
             [cdkDragData]="t">
             <button class="edit-icon" (click)="openEditModal(i)">✏️</button>
@@ -68,11 +122,11 @@
     <div class="column" 
     id="completedList"
     cdkDropList 
-    [cdkDropListData]="getTasksByStatus('completed')" 
+    [cdkDropListData]="tasks" 
     [cdkDropListConnectedTo]="['newList','progressList','deliveredList']"
     (cdkDropListDropped)="drop($event,'completed')">
         <h3 class="column-title">COMPLETED ({{completedTasks.length}})</h3>
-        <ng-container *ngFor="let t of getTasksByStatus('completed');let i=index"  >
+        <ng-container *ngFor="let t of tasks;let i=index"  >
           <div class="card" *ngIf="t.status === 'completed'" cdkDrag
           [cdkDragData]="t">
           <button class="edit-icon" (click)="openEditModal(i)">✏️</button>
@@ -90,11 +144,11 @@
     <div class="column" 
     id="deliveredList"
      cdkDropList 
-    [cdkDropListData]="getTasksByStatus('delivered')"
+    [cdkDropListData]="tasks"
     [cdkDropListConnectedTo]="['newList','progressList','completedList']"
     (cdkDropListDropped)="drop($event,'delivered')">
        <h3 class="column-title">DELIVERED ({{deliveredTasks.length}})</h3>
-        <ng-container *ngFor="let t of getTasksByStatus('delivered');let i=index"  >
+        <ng-container *ngFor="let t of tasks;let i=index"  >
             <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
             [cdkDragData]="t">
             <button class="edit-icon" (click)="openEditModal(i)">✏️</button>
@@ -109,6 +163,9 @@
         </ng-container>
 
     </div>
+
+
+
 </div>
 
 <div class="modal-backdrop" *ngIf="showTaskModal">
@@ -305,4 +362,29 @@
 
 
 
+
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</div>
+<div class="success-popup" *ngIf="showSuccessPopup">
+  ✔ Task Added Successfully
+</div>
+<div class="update-popup" *ngIf="showUpdatePopup">
+   ✓ Task Updated Successfully
+</div>
+<div class="delete-popup" *ngIf="showDeletePopup">
+   ✖ Task Deleted Successfully
+</div>
 

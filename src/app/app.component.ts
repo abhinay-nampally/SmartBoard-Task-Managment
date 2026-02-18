@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { NgFor, NgClass, NgIf } from '@angular/common';
-import { CdkDragDrop ,moveItemInArray,transferArrayItem} from '@angular/cdk/drag-drop';
+import { CdkDragDrop ,moveItemInArray} from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -66,40 +66,20 @@ export class AppComponent {
   
     drop(event: CdkDragDrop<any[]>, status: string) {
 
-  const draggedTask = event.item.data;
 
-  
-  if (draggedTask.status !== status) {
-    draggedTask.status = status;
+  if (event.previousContainer === event.container) {
+    moveItemInArray(
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   
-  const columnTasks = this.tasks.filter(t => t.status === status);
-
-  const fromIndex = columnTasks.findIndex(t => t === draggedTask);
-
-  
-  columnTasks.splice(fromIndex, 1);
-  columnTasks.splice(event.currentIndex, 0, draggedTask);
-
-  
-  this.tasks = [
-    ...this.tasks.filter(t => t.status !== status),
-    ...columnTasks
-  ];
-
-
-}
-getTasksByStatus(status: string) {
-  return this.tasks.filter(task => task.status === status);
-}
-counterUpdated = false;
-
-flashCounter() {
-  this.counterUpdated = true;
-  setTimeout(() => {
-    this.counterUpdated = false;
-  }, 600);
+  else {
+    const task = event.item.data;
+    task.status = status;
+  }
 }
   openAddModal(){
   this.modalMode = 'add';
@@ -147,7 +127,7 @@ confirmDelete(){
     this.deleteIndex = null;
     this.showDeleteModal = false;
 
-    
+    /* professional popup */
     this.showDeletePopup = true;
     setTimeout(()=> this.showDeletePopup=false, 2000);
   }
