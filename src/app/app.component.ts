@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { NgFor, NgClass, NgIf } from '@angular/common';
-import { CdkDragDrop ,moveItemInArray} from '@angular/cdk/drag-drop';
+import { CdkDragDrop ,moveItemInArray,transferArrayItem} from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -31,14 +31,9 @@ export class AppComponent {
 
 
   tasks=[
-    {title:'Design UI Wireframe', desc:'Create Login Page',priority:'High',status:'new',date:''
+    {title:'', desc:'',priority:'',status:'',date:''
     },
-    {title:'Task Sorting Feature', desc:'Move tasks',priority:'Medium',status:'progress',date:''
-    },
-    {title:'Angular Setup', desc:'Install Angular',priority:'Low',status:'completed',date:''
-    },
-    {title:'User Testing', desc:'Check localhost',priority:'Low',status:'delivered',date:''
-    }
+    
   ];
  addTask(){
   this.tasks.push({
@@ -64,22 +59,30 @@ export class AppComponent {
   }
   
   
-    drop(event: CdkDragDrop<any[]>, status: string) {
+   drop(event: CdkDragDrop<any[]>, status: string) {
 
-
-  if (event.previousContainer === event.container) {
-    moveItemInArray(
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
-    );
-  }
+  const draggedTask = event.item.data;
 
   
-  else {
-    const task = event.item.data;
-    task.status = status;
+  draggedTask.status = status;
+
+  
+  const oldIndex = this.tasks.findIndex(t => t === draggedTask);
+  this.tasks.splice(oldIndex, 1);
+
+  
+  const columnTasks = this.getTasksByStatus(status);
+
+  if (event.currentIndex >= columnTasks.length) {
+    this.tasks.push(draggedTask);
+  } else {
+    const targetTask = columnTasks[event.currentIndex];
+    const newIndex = this.tasks.findIndex(t => t === targetTask);
+    this.tasks.splice(newIndex, 0, draggedTask);
   }
+}
+getTasksByStatus(status:string){
+  return this.tasks.filter(t => t.status === status);
 }
   openAddModal(){
   this.modalMode = 'add';
@@ -127,10 +130,11 @@ confirmDelete(){
     this.deleteIndex = null;
     this.showDeleteModal = false;
 
-    /* professional popup */
+    
     this.showDeletePopup = true;
     setTimeout(()=> this.showDeletePopup=false, 2000);
   }
 }
+
   
 }
