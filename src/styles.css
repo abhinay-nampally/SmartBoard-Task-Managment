@@ -464,13 +464,11 @@ margin-bottom: 20px;
   margin-top:6px;
 }
 .toolbar{
-  width:100%;
   display:flex;
   justify-content:flex-end;
-  padding:10px 20px;
-  position:relative;
+  gap:12px;
+  margin-bottom:15px;
 }
-
 .toolbar-right{
   position:relative;
 }
@@ -517,4 +515,44 @@ margin-bottom: 20px;
   font-size:14px;
   margin-top:20px;
   font-style:italic;
+}
+.column-title{
+  background:linear-gradient(45deg,#2b6ef2,#5a8cff);
+  color:white;
+  padding:10px 14px;
+  border-radius:8px;
+  font-weight:600;
+  margin-bottom:10px;
+  letter-spacing:2px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.remove-btn{
+  background:#ef4444;
+  border:none;
+  color:white;
+  border-radius:50%;
+  width:28px;
+  height:28px;
+  cursor:pointer;
+}
+
+.remove-btn:hover{
+  background:white;
+  color:#2b6ef2;
+}
+.page-title{
+  text-align:center;
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#6b7280;
+  margin-bottom:20px;
 }

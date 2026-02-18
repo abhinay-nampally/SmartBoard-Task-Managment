@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { NgFor, NgClass, NgIf } from '@angular/common';
+import { NgFor, NgClass, NgIf, CommonModule } from '@angular/common';
 import { CdkDragDrop ,moveItemInArray,transferArrayItem} from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-root',
   standalone:true,
-  imports: [RouterOutlet, FormsModule, NgFor, NgClass, NgIf,DragDropModule],
+  imports: [RouterOutlet, FormsModule, NgFor, NgClass, NgIf,DragDropModule,CommonModule],
   templateUrl: './app.component.html',
   styleUrls: []
 })
@@ -28,6 +28,11 @@ export class AppComponent {
   showUpdatePopup = false;
   showDeletePopup = false;
   showFilter = false;
+  showNewColumn = true;
+showProgressColumn = true;
+showCompletedColumn = true;
+showDeliveredColumn = true;
+showColumnPanel=false;
 
 
 
@@ -168,6 +173,14 @@ sortByDate(type:string){
     return type === 'asc' ? d1-d2 : d2-d1;
   });
 
+}
+
+
+removeColumn(type:string){
+  if(type === 'new') this.showNewColumn = false;
+  if(type === 'progress') this.showProgressColumn = false;
+  if(type === 'completed') this.showCompletedColumn = false;
+  if(type === 'delivered') this.showDeliveredColumn = false;
 }
 
   

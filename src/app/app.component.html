@@ -1,8 +1,12 @@
-    <h1 class="page-title">Agile Task Board</h1>
+    <h1 class="page-title">Smart Board</h1>
+<p class="subtitle">Manage, track and organize tasks visually with drag-and-drop workflow</p>
     
 
 <div class="toolbar">
   <div class="toolbar-right">
+    <button class="filter-btn" (click)="showColumnPanel = !showColumnPanel">
+    ☰ Columns
+  </button>
     <button (click)="showFilter = !showFilter" class="filter-btn">
       ⚙  Sort
     </button>
@@ -22,7 +26,19 @@
         <option value="desc">Latest First</option>
       </select>
     </div>
+    <div class="filter-panel" *ngIf="showColumnPanel">
+
+    <label><input type="checkbox" [(ngModel)]="showNewColumn"> New</label>
+
+    <label><input type="checkbox" [(ngModel)]="showProgressColumn"> In Progress</label>
+
+    <label><input type="checkbox" [(ngModel)]="showCompletedColumn"> Completed</label>
+
+    <label><input type="checkbox" [(ngModel)]="showDeliveredColumn"> Delivered</label>
+
   </div>
+  </div>
+
 </div>
 
 
@@ -79,13 +95,19 @@
 </div>
 <div class="board">
 
-    <div class="column" 
+    <div *ngIf="showNewColumn"
+     class="column"
      id="newList"
      cdkDropList
      [cdkDropListData]="getTasksByStatus('new')"
      [cdkDropListConnectedTo]="['progressList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'new')">
-        <h3 class="column-title">NEW TASK({{getTasksByStatus('new').length}})</h3>
+
+  <h3 class="column-title">
+    <span>NEW TASK ({{getTasksByStatus('new').length}})</span>
+    <button class="remove-btn" (click)="removeColumn('new')">−</button>
+  </h3>
+        
         <ng-container *ngFor="let t of getTasksByStatus('new');let i=index" >
         
             <div class="card" *ngIf="t.status ==='new'" cdkDrag
@@ -128,13 +150,18 @@
 
 
 
-    <div class="column"
-    id="progressList"
+    <div *ngIf="showProgressColumn"
+     class="column"
+     id="progressList"
      cdkDropList
      [cdkDropListData]="getTasksByStatus('progress')"
      [cdkDropListConnectedTo]="['newList','completedList','deliveredList']"
      (cdkDropListDropped)="drop($event,'progress')">
-        <h3 class="column-title">IN PROGRESS ({{getTasksByStatus('progress').length}})</h3>
+
+  <h3 class="column-title">
+    <span>IN PROGRESS ({{getTasksByStatus('progress').length}})</span>
+    <button class="remove-btn" (click)="removeColumn('progress')">−</button>
+  </h3>
         <ng-container *ngFor="let t of getTasksByStatus('progress');let i=index" >
             <div class="card" *ngIf="t.status === 'progress'" cdkDrag
             [cdkDragData]="t">
@@ -153,13 +180,18 @@
 </div>
     </div>
 
-    <div class="column" 
-    id="completedList"
-    cdkDropList 
-    [cdkDropListData]="getTasksByStatus('completed')" 
-    [cdkDropListConnectedTo]="['newList','progressList','deliveredList']"
-    (cdkDropListDropped)="drop($event,'completed')">
-        <h3 class="column-title">COMPLETED ({{getTasksByStatus('completed').length}})</h3>
+    <div *ngIf="showCompletedColumn"
+     class="column"
+     id="completedList"
+     cdkDropList
+     [cdkDropListData]="getTasksByStatus('completed')"
+     [cdkDropListConnectedTo]="['newList','progressList','deliveredList']"
+     (cdkDropListDropped)="drop($event,'completed')">
+
+  <h3 class="column-title">
+    <span>COMPLETED ({{getTasksByStatus('completed').length}})</span>
+    <button class="remove-btn" (click)="removeColumn('completed')">−</button>
+  </h3>
         <ng-container *ngFor="let t of getTasksByStatus('completed');let i=index"  >
           <div class="card" *ngIf="t.status === 'completed'" cdkDrag
           [cdkDragData]="t">
@@ -178,13 +210,18 @@
 </div>
     </div>
 
-    <div class="column" 
-    id="deliveredList"
-     cdkDropList 
-    [cdkDropListData]="getTasksByStatus('delivered')"
-    [cdkDropListConnectedTo]="['newList','progressList','completedList']"
-    (cdkDropListDropped)="drop($event,'delivered')">
-       <h3 class="column-title">DELIVERED ({{getTasksByStatus('delivered').length}})</h3>
+    <div *ngIf="showDeliveredColumn"
+     class="column"
+     id="deliveredList"
+     cdkDropList
+     [cdkDropListData]="getTasksByStatus('delivered')"
+     [cdkDropListConnectedTo]="['newList','progressList','completedList']"
+     (cdkDropListDropped)="drop($event,'delivered')">
+
+  <h3 class="column-title">
+    <span>DELIVERED ({{getTasksByStatus('delivered').length}})</span>
+    <button class="remove-btn" (click)="removeColumn('delivered')">−</button>
+  </h3>
         <ng-container *ngFor="let t of getTasksByStatus('delivered');let i=index"  >
             <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
             [cdkDragData]="t">
