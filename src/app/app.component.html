@@ -1,46 +1,60 @@
-    <h1 class="page-title">Smart Board</h1>
-<p class="subtitle">Manage, track and organize tasks visually with drag-and-drop workflow</p>
-    
+<div class="header-container">
 
-<div class="toolbar">
-  <div class="toolbar-right">
-    <button class="filter-btn" (click)="showColumnPanel = !showColumnPanel">
-    ☰ Columns
-  </button>
-    <button (click)="showFilter = !showFilter" class="filter-btn">
-      ⚙  Sort
+  <div class="brand">
+    <div class="logo">SB</div>
+    <div>
+      <h1 class="page-title">SmartBoard</h1>
+      <p class="subtitle">Premium Task Workflow Manager</p>
+    </div>
+  </div>
+
+  <div class="header-actions">
+
+    <!-- Columns Button -->
+    <div class="dropdown-wrapper">
+      <button class="filter-btn" (click)="showColumnPanel = !showColumnPanel">
+        ☰ Columns
+      </button>
+
+      <div class="dropdown-panel" *ngIf="showColumnPanel">
+        <label><input type="checkbox" [(ngModel)]="showNewColumn"> New</label>
+        <label><input type="checkbox" [(ngModel)]="showProgressColumn"> In Progress</label>
+        <label><input type="checkbox" [(ngModel)]="showCompletedColumn"> Completed</label>
+        <label><input type="checkbox" [(ngModel)]="showDeliveredColumn"> Delivered</label>
+      </div>
+    </div>
+
+    <!-- Sort Button -->
+    <div class="dropdown-wrapper">
+      <button class="filter-btn" (click)="showFilter = !showFilter">
+        ⚙ Sort
+      </button>
+
+      <div class="dropdown-panel" *ngIf="showFilter">
+        <label>Priority</label>
+        <select #prioritySel (change)="sortByPriority(prioritySel.value)">
+          <option value="">All</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+
+        <label>Date</label>
+        <select #dateSel (change)="sortByDate(dateSel.value)">
+          <option value="asc">Earliest First</option>
+          <option value="desc">Latest First</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Theme Button -->
+    <button class="theme-toggle" (click)="toggleTheme()">
+      {{ isDarkMode ? '☀ Light' : '🌙 Dark' }}
     </button>
 
-    <div class="filter-panel" *ngIf="showFilter">
-      <label>Priority</label>
-      <select #prioritySel (change)="sortByPriority(prioritySel.value)">
-        <option value="">All</option>
-        <option value="High">High </option>
-        <option value="Medium">Medium </option>
-        <option value="Low">Low </option>
-      </select>
-
-      <label>Date</label>
-      <select #dateSel (change)="sortByDate(dateSel.value)">
-        <option value="asc">Earliest First</option>
-        <option value="desc">Latest First</option>
-      </select>
-    </div>
-    <div class="filter-panel" *ngIf="showColumnPanel">
-
-    <label><input type="checkbox" [(ngModel)]="showNewColumn"> New</label>
-
-    <label><input type="checkbox" [(ngModel)]="showProgressColumn"> In Progress</label>
-
-    <label><input type="checkbox" [(ngModel)]="showCompletedColumn"> Completed</label>
-
-    <label><input type="checkbox" [(ngModel)]="showDeliveredColumn"> Delivered</label>
-
-  </div>
   </div>
 
 </div>
-
 
 
     <div class="modal-backdrop" *ngIf="showTaskModal">

@@ -36,6 +36,7 @@ showColumnPanel=false;
 
 
 
+
   tasks=[
     {title:'', desc:'',priority:'',status:'',date:''
     },
@@ -181,6 +182,17 @@ removeColumn(type:string){
   if(type === 'progress') this.showProgressColumn = false;
   if(type === 'completed') this.showCompletedColumn = false;
   if(type === 'delivered') this.showDeliveredColumn = false;
+}
+isDarkMode = false;
+
+toggleTheme() {
+  this.isDarkMode = !this.isDarkMode;
+
+  if (this.isDarkMode) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
 }
 
   
