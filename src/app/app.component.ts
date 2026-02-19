@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { NgFor, NgClass, NgIf, CommonModule } from '@angular/common';
@@ -12,7 +12,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
   templateUrl: './app.component.html',
   styleUrls: []
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'AgileTaskManagementPlatformwithDragandDropButton';
   showTaskModal = false;
   showDeleteModal=false;
@@ -62,10 +62,12 @@ dynamicColumns: any[] = [];
   setTimeout(()=>{
     this.showSuccessPopup = false;
   },2000);
+  this.saveData();
 }
   editTask(i:number){
     this.editingIndex =i;
     this.newTask={...this.tasks[i]};
+    this.saveData();
   }
   
   
@@ -90,6 +92,7 @@ dynamicColumns: any[] = [];
     const newIndex = this.tasks.findIndex(t => t === targetTask);
     this.tasks.splice(newIndex, 0, draggedTask);
   }
+  this.saveData();
 }
 getTasksByStatus(status:string){
   return this.tasks.filter(t => t.status === status);
@@ -128,6 +131,7 @@ updateTask(){
     this.showUpdatePopup = true;
     setTimeout(()=> this.showUpdatePopup=false, 2000);
   }
+  this.saveData();
 }
 openDeleteModal(i:number){
   this.deleteIndex = i;
@@ -144,6 +148,7 @@ confirmDelete(){
     this.showDeletePopup = true;
     setTimeout(()=> this.showDeletePopup=false, 2000);
   }
+  this.saveData();
 }
 sortByPriority(type:string){
 
@@ -218,15 +223,18 @@ createColumn() {
   });
 
   this.showColumnModal = false;
+
+  this.saveData();   // 🔥 important
 }
 removeDynamicColumn(index: number) {
+
   const removedColumn = this.dynamicColumns[index];
 
-  // remove all tasks inside that column
   this.tasks = this.tasks.filter(t => t.status !== removedColumn.id);
 
-  // remove column from array
   this.dynamicColumns.splice(index, 1);
+
+  this.saveData();   // 🔥 important
 }
 getConnectedLists(): string[] {
 
@@ -235,6 +243,27 @@ getConnectedLists(): string[] {
   const dynamicLists = this.dynamicColumns.map(col => col.id);
 
   return [...defaultLists, ...dynamicLists];
+}
+ngOnInit() {
+  this.loadData();
+}
+
+saveData() {
+  localStorage.setItem('tasks', JSON.stringify(this.tasks));
+  localStorage.setItem('dynamicColumns', JSON.stringify(this.dynamicColumns));
+}
+
+loadData() {
+  const savedTasks = localStorage.getItem('tasks');
+  const savedColumns = localStorage.getItem('dynamicColumns');
+
+  if (savedTasks) {
+    this.tasks = JSON.parse(savedTasks);
+  }
+
+  if (savedColumns) {
+    this.dynamicColumns = JSON.parse(savedColumns);
+  }
 }
 
   
