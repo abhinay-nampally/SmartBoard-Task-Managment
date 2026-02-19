@@ -33,7 +33,9 @@ showProgressColumn = true;
 showCompletedColumn = true;
 showDeliveredColumn = true;
 showColumnPanel=false;
-
+showColumnModal = false;
+newColumnName = '';
+dynamicColumns: any[] = [];
 
 
 
@@ -42,6 +44,7 @@ showColumnPanel=false;
     },
     
   ];
+  
  addTask(){
   this.tasks.push({
     title: this.newTask.title,
@@ -193,6 +196,45 @@ toggleTheme() {
   } else {
     document.body.classList.remove('dark-mode');
   }
+}
+openColumnModal() {
+  this.newColumnName = '';
+  this.showColumnModal = true;
+}
+
+closeColumnModal() {
+  this.showColumnModal = false;
+}
+
+createColumn() {
+
+  if (!this.newColumnName.trim()) return;
+
+  const id = this.newColumnName.toLowerCase().replace(/\s+/g, '');
+
+  this.dynamicColumns.push({
+    name: this.newColumnName,
+    id: id
+  });
+
+  this.showColumnModal = false;
+}
+removeDynamicColumn(index: number) {
+  const removedColumn = this.dynamicColumns[index];
+
+  // remove all tasks inside that column
+  this.tasks = this.tasks.filter(t => t.status !== removedColumn.id);
+
+  // remove column from array
+  this.dynamicColumns.splice(index, 1);
+}
+getConnectedLists(): string[] {
+
+  const defaultLists = ['newList','progressList','completedList','deliveredList'];
+
+  const dynamicLists = this.dynamicColumns.map(col => col.id);
+
+  return [...defaultLists, ...dynamicLists];
 }
 
   

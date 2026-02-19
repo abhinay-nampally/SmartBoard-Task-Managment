@@ -11,18 +11,9 @@
   <div class="header-actions">
 
     <!-- Columns Button -->
-    <div class="dropdown-wrapper">
-      <button class="filter-btn" (click)="showColumnPanel = !showColumnPanel">
-        ☰ Columns
-      </button>
-
-      <div class="dropdown-panel" *ngIf="showColumnPanel">
-        <label><input type="checkbox" [(ngModel)]="showNewColumn"> New</label>
-        <label><input type="checkbox" [(ngModel)]="showProgressColumn"> In Progress</label>
-        <label><input type="checkbox" [(ngModel)]="showCompletedColumn"> Completed</label>
-        <label><input type="checkbox" [(ngModel)]="showDeliveredColumn"> Delivered</label>
-      </div>
-    </div>
+    <button class="filter-btn" (click)="openColumnModal()">
+  + New Column
+</button>
 
     <!-- Sort Button -->
     <div class="dropdown-wrapper">
@@ -49,8 +40,9 @@
 
     <!-- Theme Button -->
     <button class="theme-toggle" (click)="toggleTheme()">
-      {{ isDarkMode ? '☀ Light' : '🌙 Dark' }}
-    </button>
+  <span class="icon">{{ isDarkMode ? '☀' : '🌙' }}</span>
+  <span>{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+</button>
 
   </div>
 
@@ -90,22 +82,7 @@
       <option>Medium</option>
       <option>Low</option>
     </select>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
+ </div>
 </div>
 <div class="board">
 
@@ -114,7 +91,7 @@
      id="newList"
      cdkDropList
      [cdkDropListData]="getTasksByStatus('new')"
-     [cdkDropListConnectedTo]="['progressList','completedList','deliveredList']"
+     [cdkDropListConnectedTo]="getConnectedLists()"
      (cdkDropListDropped)="drop($event,'new')">
 
   <h3 class="column-title">
@@ -146,30 +123,12 @@
               <button class="add-btn" (click)="openAddModal()">+ Add Task</button>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <div *ngIf="showProgressColumn"
+  <div *ngIf="showProgressColumn"
      class="column"
      id="progressList"
      cdkDropList
      [cdkDropListData]="getTasksByStatus('progress')"
-     [cdkDropListConnectedTo]="['newList','completedList','deliveredList']"
+     [cdkDropListConnectedTo]="getConnectedLists()"
      (cdkDropListDropped)="drop($event,'progress')">
 
   <h3 class="column-title">
@@ -191,7 +150,7 @@
         </ng-container>
         <div class="empty-msg" *ngIf="getTasksByStatus('progress').length === 0">
    No tasks yet
-</div>
+ </div>
     </div>
 
     <div *ngIf="showCompletedColumn"
@@ -221,23 +180,23 @@
         </ng-container>
         <div class="empty-msg" *ngIf="getTasksByStatus('completed').length === 0">
    No tasks yet
-</div>
+  </div>
     </div>
 
     <div *ngIf="showDeliveredColumn"
-     class="column"
-     id="deliveredList"
-     cdkDropList
-     [cdkDropListData]="getTasksByStatus('delivered')"
-     [cdkDropListConnectedTo]="['newList','progressList','completedList']"
-     (cdkDropListDropped)="drop($event,'delivered')">
+      class="column"
+      id="deliveredList"
+       cdkDropList
+       [cdkDropListData]="getTasksByStatus('delivered')"
+       [cdkDropListConnectedTo]="getConnectedLists()"
+       (cdkDropListDropped)="drop($event,'delivered')">
 
-  <h3 class="column-title">
-    <span>DELIVERED ({{getTasksByStatus('delivered').length}})</span>
-    <button class="remove-btn" (click)="removeColumn('delivered')">−</button>
-  </h3>
+        <h3 class="column-title">
+       <span>DELIVERED ({{getTasksByStatus('delivered').length}})</span>
+       <button class="remove-btn" (click)="removeColumn('delivered')">−</button>
+       </h3>
         <ng-container *ngFor="let t of getTasksByStatus('delivered');let i=index"  >
-            <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
+        <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
             [cdkDragData]="t">
             <button class="edit-icon" (click)="openEditModal(i)">✏️</button>
              <button class="delete-icon" (click)="openDeleteModal(i)">
@@ -247,15 +206,54 @@
           <div class="task-desc">{{t.desc}}</div>
           <span class="badge" [ngClass]="{'high':t.priority=='High','medium':t.priority=='Medium','low':t.priority=='Low'}">{{t.priority}}</span>
           <div class="task-date">📅 {{t.date}}</div>
-         </div>
+        </div>
         </ng-container>
         <div class="empty-msg" *ngIf="getTasksByStatus('delivered').length === 0">
-   No tasks yet
-</div>
+            No tasks yet
+      </div>
 
-    </div>
+   
 
+  </div>
+   <div *ngFor="let col of dynamicColumns; let i = index"
+     class="column"
+     [id]="col.id"
+     cdkDropList
+     [cdkDropListData]="getTasksByStatus(col.id)"
+     [cdkDropListConnectedTo]="getConnectedLists()"
+     (cdkDropListDropped)="drop($event,col.id)">
 
+  <h3 class="column-title">
+    <span>{{col.name | uppercase}} ({{getTasksByStatus(col.id).length}})</span>
+
+    <!-- REMOVE BUTTON -->
+    <button class="remove-btn" (click)="removeDynamicColumn(i)">
+      −
+    </button>
+  </h3>
+
+  <!-- CARDS -->
+  <div *ngFor="let t of getTasksByStatus(col.id)"
+       class="card"
+       cdkDrag
+       [cdkDragData]="t">
+
+    <div class="task-title">{{t.title}}</div>
+    <div class="task-desc">{{t.desc}}</div>
+
+    <span class="badge"
+      [ngClass]="{'high':t.priority=='High','medium':t.priority=='Medium','low':t.priority=='Low'}">
+      {{t.priority}}
+    </span>
+
+    <div class="task-date">📅 {{t.date}}</div>
+  </div>
+
+  <!-- EMPTY MESSAGE -->
+  <div class="empty-msg"
+       *ngIf="getTasksByStatus(col.id).length === 0">
+    No tasks yet
+  </div>
 
 </div>
 
@@ -316,158 +314,21 @@
           <button class="delete-btn" (click)="confirmDelete()">
               Delete
           </button>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-
-
-
-
-
-
-
-
-
-
-
-
+</div>
+
+ </div>
+</div>
+<!-- COLUMN MODAL -->
+<div class="modal-backdrop" *ngIf="showColumnModal">
+  <div class="modal-box">
+    <h3>Create New Column</h3>
+
+    <input [(ngModel)]="newColumnName" placeholder="Enter Column Name">
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="closeColumnModal()">Cancel</button>
+      <button class="submit-btn" (click)="createColumn()">Create</button>
+    </div>
   </div>
 </div>
 <div class="success-popup" *ngIf="showSuccessPopup">
