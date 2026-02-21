@@ -289,34 +289,28 @@
 
   </div>
 </div>
-
-
-
+<!-- DELETE MODAL -->
 <div class="modal-backdrop" *ngIf="showDeleteModal">
-  <div class="modal-box">
+  <div class="delete-modal">
 
+    <div class="warning-icon">
+      ⚠
+    </div>
 
-      <h3>Delete this task?</h3>
+    <h3>Delete this task?</h3>
+    <p>This action cannot be undone.</p>
 
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="showDeleteModal=false">
+        Cancel
+      </button>
 
+      <button class="delete-btn" (click)="confirmDelete()">
+        Delete
+      </button>
+    </div>
 
-
-
-      <div class="modal-actions">
-          <button class="cancel-btn" (click)="showDeleteModal=false">
-              Cancel
-          </button>
-
-
-
-
-
-          <button class="delete-btn" (click)="confirmDelete()">
-              Delete
-          </button>
-</div>
-
- </div>
+  </div>
 </div>
 <!-- COLUMN MODAL -->
 <div class="modal-backdrop" *ngIf="showColumnModal">
