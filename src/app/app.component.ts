@@ -36,6 +36,13 @@ showColumnPanel=false;
 showColumnModal = false;
 newColumnName = '';
 dynamicColumns: any[] = [];
+showColumnDeleteModal = false;
+columnToDeleteKey: string | null = null;
+showColumnSuccessPopup = false;
+showColumnDeleteSuccessPopup = false;
+editingColumnId: string | null = null;
+editedColumnName = '';
+showColumnEditSuccessPopup = false;
 
 
 
@@ -185,12 +192,7 @@ sortByDate(type:string){
 }
 
 
-removeColumn(type:string){
-  if(type === 'new') this.showNewColumn = false;
-  if(type === 'progress') this.showProgressColumn = false;
-  if(type === 'completed') this.showCompletedColumn = false;
-  if(type === 'delivered') this.showDeliveredColumn = false;
-}
+
 isDarkMode = false;
 
 toggleTheme() {
@@ -210,6 +212,10 @@ openColumnModal() {
 closeColumnModal() {
   this.showColumnModal = false;
 }
+openColumnDeleteModal(key: string) {
+  this.columnToDeleteKey = key;
+  this.showColumnDeleteModal = true;
+}
 
 createColumn() {
 
@@ -222,19 +228,45 @@ createColumn() {
     id: id
   });
 
+  this.newColumnName = '';
   this.showColumnModal = false;
 
-  this.saveData();   // 🔥 important
+  this.showColumnSuccessPopup = true;
+
+  setTimeout(() => {
+    this.showColumnSuccessPopup = false;
+  }, 2000);
+
+  this.saveData();
 }
-removeDynamicColumn(index: number) {
 
-  const removedColumn = this.dynamicColumns[index];
+confirmColumnDelete() {
 
-  this.tasks = this.tasks.filter(t => t.status !== removedColumn.id);
+  if (!this.columnToDeleteKey) return;
 
-  this.dynamicColumns.splice(index, 1);
+  this.tasks = this.tasks.filter(
+    t => t.status !== this.columnToDeleteKey
+  );
 
-  this.saveData();   // 🔥 important
+  this.dynamicColumns = this.dynamicColumns.filter(
+    col => col.id !== this.columnToDeleteKey
+  );
+
+  if (this.columnToDeleteKey === 'new') this.showNewColumn = false;
+  if (this.columnToDeleteKey === 'progress') this.showProgressColumn = false;
+  if (this.columnToDeleteKey === 'completed') this.showCompletedColumn = false;
+  if (this.columnToDeleteKey === 'delivered') this.showDeliveredColumn = false;
+
+  this.columnToDeleteKey = null;
+  this.showColumnDeleteModal = false;
+
+  this.showColumnDeleteSuccessPopup = true;
+
+  setTimeout(() => {
+    this.showColumnDeleteSuccessPopup = false;
+  }, 2000);
+
+  this.saveData();
 }
 getConnectedLists(): string[] {
 
@@ -264,6 +296,34 @@ loadData() {
   if (savedColumns) {
     this.dynamicColumns = JSON.parse(savedColumns);
   }
+}
+// EDIT COLOUM HEADER
+openEditColumn(col: any) {
+  this.editingColumnId = col.id;
+  this.editedColumnName = col.name;
+}
+
+saveColumnName(col: any) {
+
+  if (!this.editedColumnName.trim()) return;
+
+  col.name = this.editedColumnName.trim();
+
+  this.editingColumnId = null;
+  this.editedColumnName = '';
+
+  this.showColumnEditSuccessPopup = true;
+
+  setTimeout(() => {
+    this.showColumnEditSuccessPopup = false;
+  }, 2000);
+
+  this.saveData(); // if using localStorage
+}
+
+cancelColumnEdit() {
+  this.editingColumnId = null;
+  this.editedColumnName = '';
 }
 
   

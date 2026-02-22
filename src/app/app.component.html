@@ -1,3 +1,5 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 <div class="header-container">
 
   <div class="brand">
@@ -96,7 +98,7 @@
 
   <h3 class="column-title">
     <span>NEW TASK ({{getTasksByStatus('new').length}})</span>
-    <button class="remove-btn" (click)="removeColumn('new')">−</button>
+    <button class="remove-btn"(click)="openColumnDeleteModal('new')"><span class="material-icons">delete</span></button>
   </h3>
         
         <ng-container *ngFor="let t of getTasksByStatus('new');let i=index" >
@@ -133,7 +135,7 @@
 
   <h3 class="column-title">
     <span>IN PROGRESS ({{getTasksByStatus('progress').length}})</span>
-    <button class="remove-btn" (click)="removeColumn('progress')">−</button>
+    <button class="remove-btn"(click)="openColumnDeleteModal('progress')"><span class="material-icons">delete</span></button>
   </h3>
         <ng-container *ngFor="let t of getTasksByStatus('progress');let i=index" >
             <div class="card" *ngIf="t.status === 'progress'" cdkDrag
@@ -163,7 +165,7 @@
 
   <h3 class="column-title">
     <span>COMPLETED ({{getTasksByStatus('completed').length}})</span>
-    <button class="remove-btn" (click)="removeColumn('completed')">−</button>
+    <button class="remove-btn"(click)="openColumnDeleteModal('complted')"><span class="material-icons">delete</span></button>
   </h3>
         <ng-container *ngFor="let t of getTasksByStatus('completed');let i=index"  >
           <div class="card" *ngIf="t.status === 'completed'" cdkDrag
@@ -193,7 +195,7 @@
 
         <h3 class="column-title">
        <span>DELIVERED ({{getTasksByStatus('delivered').length}})</span>
-       <button class="remove-btn" (click)="removeColumn('delivered')">−</button>
+       <button class="remove-btn"(click)="openColumnDeleteModal('delivered')"><span class="material-icons">delete</span></button>
        </h3>
         <ng-container *ngFor="let t of getTasksByStatus('delivered');let i=index"  >
         <div class="card" *ngIf="t.status === 'delivered'" cdkDrag
@@ -224,14 +226,48 @@
      (cdkDropListDropped)="drop($event,col.id)">
 
   <h3 class="column-title">
-    <span>{{col.name | uppercase}} ({{getTasksByStatus(col.id).length}})</span>
 
-    <!-- REMOVE BUTTON -->
-    <button class="remove-btn" (click)="removeDynamicColumn(i)">
-      −
-    </button>
-  </h3>
+  <!-- NORMAL MODE -->
+  <ng-container *ngIf="editingColumnId !== col.id">
+    <span>
+      {{col.name | uppercase}}
+      ({{getTasksByStatus(col.id).length}})
+    </span>
 
+    <div class="column-actions">
+      <!-- EDIT ICON -->
+      <button class="edit-col-btn"
+              (click)="openEditColumn(col)">
+        <span class="material-icons">edit</span>
+      </button>
+
+      <!-- DELETE ICON -->
+      <button class="remove-btn"
+              (click)="openColumnDeleteModal(col.id)">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- EDIT MODE -->
+  <ng-container *ngIf="editingColumnId === col.id">
+    <input [(ngModel)]="editedColumnName"
+           class="edit-column-input">
+
+    <div class="column-actions">
+      <button class="save-col-btn"
+              (click)="saveColumnName(col)">
+        ✔
+      </button>
+
+      <button class="cancel-col-btn"
+              (click)="cancelColumnEdit()">
+        ✖
+      </button>
+    </div>
+  </ng-container>
+
+</h3>
   <!-- CARDS -->
   <div *ngFor="let t of getTasksByStatus(col.id)"
        class="card"
@@ -315,14 +351,24 @@
 <!-- COLUMN MODAL -->
 <div class="modal-backdrop" *ngIf="showColumnModal">
   <div class="modal-box">
+
     <h3>Create New Column</h3>
 
-    <input [(ngModel)]="newColumnName" placeholder="Enter Column Name">
+    <input [(ngModel)]="newColumnName"
+           placeholder="Enter Column Name">
 
     <div class="modal-actions">
-      <button class="cancel-btn" (click)="closeColumnModal()">Cancel</button>
-      <button class="submit-btn" (click)="createColumn()">Create</button>
+      <button class="cancel-btn"
+              (click)="closeColumnModal()">
+        Cancel
+      </button>
+
+      <button class="submit-btn"
+              (click)="createColumn()">
+        Create Column
+      </button>
     </div>
+
   </div>
 </div>
 <div class="success-popup" *ngIf="showSuccessPopup">
@@ -334,4 +380,38 @@
 <div class="delete-popup" *ngIf="showDeletePopup">
    ✖ Task Deleted Successfully
 </div>
+<!-- COLUMN ADDED SUCCESS -->
+<div class="success-popup" *ngIf="showColumnSuccessPopup">
+  ✔ Column Created Successfully
+</div>
 
+<!-- COLUMN DELETE SUCCESS -->
+<div class="delete-popup" *ngIf="showColumnDeleteSuccessPopup">
+  ✖ Column Deleted Successfully
+</div>
+<div class="update-popup" *ngIf="showColumnEditSuccessPopup">
+  ✔ Column Name Updated Sucessfully
+</div>
+<!-- COLUMN DELETE MODAL -->
+<div class="modal-backdrop" *ngIf="showColumnDeleteModal">
+  <div class="delete-modal">
+
+    <div class="warning-icon">⚠</div>
+
+    <h3>Delete this column?</h3>
+    <p>All tasks inside this column will be permanently deleted.</p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn"
+              (click)="showColumnDeleteModal=false">
+        Cancel
+      </button>
+
+      <button class="delete-btn"
+              (click)="confirmColumnDelete()">
+        Delete Column
+      </button>
+    </div>
+
+  </div>
+</div>

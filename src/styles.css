@@ -384,6 +384,7 @@ body {
 .update-popup { background: #3b82f6; }
 .delete-popup { background: #ef4444; }
 
+
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 1024px) {
@@ -523,4 +524,87 @@ body.dark-mode .theme-toggle:hover {
 
 .cancel-btn:hover {
   background: #e5e7eb;
+}
+.remove-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.remove-btn .material-icons {
+  font-size: 20px;
+}
+
+.remove-btn:hover {
+  background: #ef4444;
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(239,68,68,0.4);
+}
+.column-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.column-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-col-btn,
+.remove-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  color: white;
+}
+
+.edit-col-btn:hover {
+  background: #f59e0b;
+  transform: scale(1.1);
+}
+
+.remove-btn:hover {
+  background: #ef4444;
+  transform: scale(1.1);
+}
+
+.edit-column-input {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  width: 140px;
+}
+
+.save-col-btn {
+  background: #22c55e;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.cancel-col-btn {
+  background: #ef4444;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
 }
