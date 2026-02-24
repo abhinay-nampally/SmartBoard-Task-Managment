@@ -1,8 +1,19 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Routes } from '@angular/router';
 
-import { routes } from './app.routes';
+import { LoginComponent } from './login/login.component';
+import { BoardComponent } from './board/board.component';
+import { authGuard } from './auth.guard';
 
-export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes)]
+const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { 
+    path: 'board', 
+    component: BoardComponent,
+    canActivate: [authGuard]
+  }
+];
+
+export const appConfig = {
+  providers: [provideRouter(routes)]
 };

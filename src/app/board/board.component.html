@@ -1,0 +1,355 @@
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- HEADER -->
+<div class="header-container">
+
+  <div class="brand">
+    <div class="logo">SB</div>
+    <div>
+      <h1 class="page-title">SmartBoard</h1>
+      <p class="subtitle">Premium Task Workflow Manager</p>
+      
+    </div>
+  </div>
+  <div class="search-box">
+  <span class="material-icons">search</span>
+
+  <input type="text"
+         placeholder="Search tasks..."
+         [(ngModel)]="searchText">
+
+  <span *ngIf="searchText"
+        class="clear-btn"
+        (click)="searchText=''">
+        ✖
+  </span>
+</div>
+
+  <div class="header-actions">
+
+    <!-- NEW COLUMN -->
+    <button class="filter-btn" (click)="openColumnModal()">
+      + New Column
+    </button>
+    
+    
+
+    <!-- SORT -->
+    <div class="dropdown-wrapper">
+      <button class="filter-btn" (click)="showFilter = !showFilter">
+        ⚙ Sort
+      </button>
+
+      <div class="dropdown-panel" *ngIf="showFilter">
+
+        <label>Priority</label>
+        <select (change)="sortByPriority($any($event.target).value)">
+          <option value="">All</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+
+        <label>Date</label>
+        <select (change)="sortByDate($any($event.target).value)">
+          <option value="asc">Earliest First</option>
+          <option value="desc">Latest First</option>
+        </select>
+
+      </div>
+    </div>
+    
+    <!-- DARK MODE -->
+    <button class="theme-toggle" (click)="toggleTheme()">
+      {{ isDarkMode ? '☀ Light Mode' : '🌙 Dark Mode' }}
+    </button>
+   <div class="user-section" (click)="toggleUserMenu()">
+
+  <div class="avatar">
+    {{ getUserInitial() }}
+  </div>
+
+  <div class="user-email">
+    {{ currentUser }}
+  </div>
+
+</div>
+<div class="user-dropdown" *ngIf="showUserMenu">
+  <button (click)="goToProfile()">👤 Profile</button>
+  <button (click)="logout()">🚪 Logout</button>
+</div>
+
+  </div>
+
+</div>
+
+<!-- ================= BOARD ================= -->
+
+<div class="board"
+     cdkDropList
+     cdkDropListOrientation="horizontal"
+     (cdkDropListDropped)="dropColumn($event)">
+
+  <div *ngFor="let col of columns"
+       class="column"
+       cdkDrag>
+
+    <!-- COLUMN HEADER -->
+    
+
+      <div class="column-title">
+
+  <!-- NORMAL MODE -->
+  <ng-container *ngIf="editingColumnId !== col.id">
+
+    <span>
+      {{col.name | uppercase}}
+      ({{getTasksByStatus(col.id).length}})
+    </span>
+
+    <div class="column-actions">
+      <button class="edit-col-btn"
+              (click)="openEditColumn(col)">
+        <span class="material-icons">edit</span>
+      </button>
+
+      <button class="remove-btn"
+              (click)="openColumnDeleteModal(col.id)">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+
+  </ng-container>
+
+  <!-- EDIT MODE -->
+  <ng-container *ngIf="editingColumnId === col.id">
+
+    <input [(ngModel)]="editedColumnName"
+           class="edit-column-input" />
+
+    <div class="column-actions">
+      <button class="save-col-btn"
+              (click)="saveColumnName(col)">
+        ✔
+      </button>
+
+      <button class="cancel-col-btn"
+              (click)="editingColumnId = null">
+        ✖
+      </button>
+    </div>
+
+  </ng-container>
+
+</div>
+    <!-- TASK AREA -->
+    <div class="column-body"
+         cdkDropList
+         [id]="col.id"
+         [cdkDropListData]="getTasksByStatus(col.id)"
+         [cdkDropListConnectedTo]="getConnectedLists()"
+         (cdkDropListDropped)="drop($event, col.id)">
+
+      <!-- TASK LOOP -->
+      
+          <div *ngFor="let t of getTasksByStatus(col.id)"
+     class="card"
+     cdkDrag
+     [cdkDragData]="t">
+
+  <div class="card-header">
+
+    <div class="task-title"
+     [innerHTML]="highlight(t.title)">
+</div>
+
+
+
+    <div class="card-actions">
+      <button class="icon-btn"
+              (click)="openEditModal(tasks.indexOf(t))">
+        ✏️
+      </button>
+
+      <button class="icon-btn delete"
+              (click)="openDeleteModal(tasks.indexOf(t))">
+        <span class="material-icons">delete_outline</span>
+      </button>
+    </div>
+
+  </div>
+
+   <div class="task-desc"
+     [innerHTML]="highlight(t.desc)">
+</div>
+  <span class="badge"
+        [ngClass]="{
+          'high': t.priority=='High',
+          'medium': t.priority=='Medium',
+          'low': t.priority=='Low'
+        }">
+        {{t.priority}}
+  </span>
+
+  <div class="task-date">📅 {{t.date}}</div>
+
+</div>
+      <!-- EMPTY MESSAGE -->
+      <div class="empty-msg"
+           *ngIf="getTasksByStatus(col.id).length === 0">
+        No tasks yet
+      </div>
+      <div class="empty-msg"
+     *ngIf="searchText && getTasksByStatus(col.id).length === 0">
+  No matching tasks found
+</div>
+
+      <!-- ADD TASK BUTTON -->
+      <button class="add-btn"
+              (click)="openAddModal(col.id)">
+        + Add Task
+      </button>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= TASK MODAL ================= -->
+
+<div class="modal-backdrop" *ngIf="showTaskModal">
+  <div class="modal-box">
+
+    <h3>{{modalMode=='add' ? 'Add Task' : 'Edit Task'}}</h3>
+
+    <input [(ngModel)]="newTask.title" placeholder="Enter Title">
+    <textarea [(ngModel)]="newTask.desc" placeholder="Enter Description"></textarea>
+
+    <select [(ngModel)]="newTask.priority">
+      <option>High</option>
+      <option>Medium</option>
+      <option>Low</option>
+    </select>
+
+    <input type="date" [(ngModel)]="newTask.date">
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="showTaskModal=false">
+        Cancel
+      </button>
+
+      <button class="submit-btn"
+              *ngIf="modalMode=='add'"
+              (click)="addTask()">
+        Add Task
+      </button>
+
+      <button class="submit-btn"
+              *ngIf="modalMode=='edit'"
+              (click)="updateTask()">
+        Update
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= TASK DELETE MODAL ================= -->
+
+<div class="modal-backdrop" *ngIf="showDeleteModal">
+  <div class="delete-modal">
+
+    <div class="warning-icon">⚠</div>
+
+    <h3>Delete this task?</h3>
+    <p>This action cannot be undone.</p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="showDeleteModal=false">
+        Cancel
+      </button>
+
+      <button class="delete-btn" (click)="confirmDelete()">
+        Delete
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= COLUMN CREATE MODAL ================= -->
+
+<div class="modal-backdrop" *ngIf="showColumnModal">
+  <div class="modal-box">
+
+    <h3>Create New Column</h3>
+
+    <input [(ngModel)]="newColumnName"
+           placeholder="Enter Column Name">
+
+    <div class="modal-actions">
+      <button class="cancel-btn"
+              (click)="showColumnModal=false">
+        Cancel
+      </button>
+
+      <button class="submit-btn"
+              (click)="createColumn()">
+        Create Column
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= COLUMN DELETE MODAL ================= -->
+
+<div class="modal-backdrop" *ngIf="showColumnDeleteModal">
+  <div class="delete-modal">
+
+    <div class="warning-icon">⚠</div>
+
+    <h3>Delete this column?</h3>
+    <p>All tasks inside this column will be permanently deleted.</p>
+
+    <div class="modal-actions">
+      <button class="cancel-btn"
+              (click)="showColumnDeleteModal=false">
+        Cancel
+      </button>
+
+      <button class="delete-btn"
+              (click)="confirmColumnDelete()">
+        Delete Column
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= POPUPS ================= -->
+
+<div class="success-popup" *ngIf="showSuccessPopup">
+  ✔ Task Added Successfully
+</div>
+
+<div class="update-popup" *ngIf="showUpdatePopup">
+  ✔ Task Updated Successfully
+</div>
+
+<div class="delete-popup" *ngIf="showDeletePopup">
+  ✖ Task Deleted Successfully
+</div>
+
+<div class="success-popup" *ngIf="showColumnSuccessPopup">
+  ✔ Column Created Successfully
+</div>
+
+<div class="delete-popup" *ngIf="showColumnDeleteSuccessPopup">
+  ✖ Column Deleted Successfully
+</div>
+
+<div class="update-popup" *ngIf="showColumnEditSuccessPopup">
+  ✔ Column Name Updated Successfully
+</div>
