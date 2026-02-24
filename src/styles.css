@@ -229,6 +229,45 @@ body {
   margin-top: 6px;
   color: #9ca3af;
 }
+/* ===== CARD HEADER FLEX ALIGN ===== */
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: #c7d2fe;
+  transform: scale(1.1);
+}
+
+.icon-btn.delete {
+  background: #fee2e2;
+}
+
+.icon-btn.delete:hover {
+  background: #fecaca;
+}
 
 /* ================= BADGES ================= */
 
@@ -248,25 +287,7 @@ body {
 
 /* ================= ICONS ================= */
 
-.edit-icon,
-.delete-icon {
-  position: absolute;
-  top: 12px;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
 
-.edit-icon {
-  right: 44px;
-  background: #eef2ff;
-}
 
 .delete-icon {
   right: 12px;
