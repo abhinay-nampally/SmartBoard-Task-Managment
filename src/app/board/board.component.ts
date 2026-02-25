@@ -57,14 +57,15 @@ export class BoardComponent implements OnInit {
 
   // ------------------ INIT ------------------
  ngOnInit() {
-  const user = localStorage.getItem('loggedUser');
+  const user = localStorage.getItem('currentUser');
 
   if (!user) {
     this.router.navigate(['/login']);
     return;
   }
 
-  this.currentUser = user;   
+  const parsedUser = JSON.parse(user);   
+  this.currentUser = parsedUser.email;   
 
   this.loadData();
 }
