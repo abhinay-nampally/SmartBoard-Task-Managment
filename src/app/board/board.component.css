@@ -1,0 +1,7 @@
+.board-container {
+  color: #1f2937; /* dark text for light mode */
+}
+.board-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+}

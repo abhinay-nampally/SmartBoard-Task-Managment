@@ -15,47 +15,54 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
   
-  errorMessage: string = '';
-showPopup: boolean = false;
-  
+ emailError: string = '';
+passwordError: string = '';
 
   constructor(private router: Router) {}
 login() {
-  console.log("LOGIN FUNCTION CALLED");
+
+  this.emailError = '';
+  this.passwordError = '';
+
+  // 🔹 Empty field validation
+  if (!this.email && !this.password) {
+    this.emailError = "Email is required";
+    this.passwordError = "Password is required";
+    return;
+  }
+
+  if (!this.email) {
+    this.emailError = "Email is required";
+    return;
+  }
+
+  if (!this.password) {
+    this.passwordError = "Password is required";
+    return;
+  }
 
   const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-  if (!this.email || !this.password) {
-    this.errorMessage = "Please enter email and password";
-    this.showPopup = true;
-    return;
-  }
-
   const user = users.find((u: any) => u.email === this.email);
 
+  // 🔹 Email not registered
   if (!user) {
-    this.errorMessage = "Email not registered!";
-    this.showPopup = true;
+    this.emailError = "Email not registered";
     return;
   }
 
-  if (user && user.password !== this.password) {
-    this.errorMessage = "Wrong password!";
-    this.showPopup = true;
+  // 🔹 Wrong password
+  if (user.password !== this.password) {
+    this.passwordError = "Wrong password";
     return;
   }
 
+  // 🔹 SUCCESS
   localStorage.setItem('currentUser', JSON.stringify(user));
-console.log("User saved:", localStorage.getItem('currentUser'));
-
-this.router.navigate(['/board']);
-
+  this.router.navigate(['/board']);
 }
 goToRegister() {
   console.log("Register clicked")
   this.router.navigate(['/register']);
 }
-closePopup() {
-  this.showPopup = false;
-}
+
 }

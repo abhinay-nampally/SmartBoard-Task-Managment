@@ -2,15 +2,24 @@
 
   <div class="login-box">
     <h2>SmartBoard Login</h2>
-
-    <input type="email"
-           placeholder="Email"
-           [(ngModel)]="email">
-
-    <input type="password"
-           placeholder="Password"
-           [(ngModel)]="password">
-
+<div class="input-wrapper">
+  <input type="email"
+         [(ngModel)]="email"
+         placeholder="Email"
+         [class.error-input]="emailError" />
+  <span class="error-inside" *ngIf="emailError">
+    {{ emailError }}
+  </span>
+</div>
+<div class="input-wrapper">
+  <input type="password"
+         [(ngModel)]="password"
+         placeholder="Password"
+         [class.error-input]="passwordError" />
+  <span class="error-inside" *ngIf="passwordError">
+    {{ passwordError }}
+  </span>
+</div>
     <form (ngSubmit)="login()">
   <button type="submit">Login</button>
 </form>
@@ -22,13 +31,7 @@
 </p>
 
   </div>
-  <!-- Premium Popup -->
-<div class="popup-overlay" *ngIf="showPopup">
-  <div class="popup-box">
-    <h3>Error</h3>
-    <p>{{ errorMessage }}</p>
-    <button (click)="closePopup()">OK</button>
-  </div>
-</div>
+  
+
 
 </div>
