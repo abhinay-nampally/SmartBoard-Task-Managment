@@ -3,6 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { NgFor, NgIf, NgClass, CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { TaskService } from '../services/task.service';
+import { ColumnService } from '../services/column.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-board',
@@ -53,10 +57,15 @@ export class BoardComponent implements OnInit {
   searchText: string = ''; 
   currentUser: string = '';
   showUserMenu: boolean = false;
-  constructor(private router: Router) {}  
-
+  constructor(
+  private router: Router,
+  private taskService: TaskService,
+  private columnService: ColumnService,
+  private authService: AuthService
+) {}
   // ------------------ INIT ------------------
  ngOnInit() {
+
   const user = localStorage.getItem('currentUser');
 
   if (!user) {
@@ -64,10 +73,23 @@ export class BoardComponent implements OnInit {
     return;
   }
 
-  const parsedUser = JSON.parse(user);   
-  this.currentUser = parsedUser.email;   
+  const parsedUser = JSON.parse(user);
+  this.currentUser = parsedUser.email;
 
-  this.loadData();
+  // Load Tasks
+  this.taskService.getTasks(this.currentUser)
+    .subscribe(data => {
+      this.tasks = data;
+    });
+
+  // Load Columns
+  this.columnService.getColumns(this.currentUser)
+    .subscribe(cols => {
+
+      if (cols.length > 0) {
+        this.columns = cols;
+      }
+    });
 }
 
   // ------------------ TASK METHODS ------------------
@@ -88,13 +110,24 @@ export class BoardComponent implements OnInit {
     this.showTaskModal = true;
   }
 
-  addTask() {
-    this.tasks.push({ ...this.newTask });
-    this.showTaskModal = false;
-    this.showSuccessPopup = true;
-    setTimeout(() => this.showSuccessPopup = false, 2000);
-    this.saveData();
-  }
+ addTask() {
+
+  const taskData = {
+    ...this.newTask,
+    user: this.currentUser,
+    order:this.tasks.length
+  };
+
+  this.taskService.addTask(taskData)
+    .subscribe(res => {
+
+      this.tasks.push(res);
+
+      this.showTaskModal = false;
+      this.showSuccessPopup = true;
+      setTimeout(() => this.showSuccessPopup = false, 2000);
+    });
+}
 
   openEditModal(index: number) {
     this.modalMode = 'edit';
@@ -103,15 +136,22 @@ export class BoardComponent implements OnInit {
     this.showTaskModal = true;
   }
 
-  updateTask() {
-    if (this.editingIndex !== null) {
-      this.tasks[this.editingIndex] = { ...this.newTask };
+ updateTask() {
+
+  if (this.editingIndex === null) return;
+
+  const task = this.tasks[this.editingIndex];
+
+  this.taskService.updateTask(task.id, this.newTask)
+    .subscribe(res => {
+
+      this.tasks[this.editingIndex!] = res;
+
       this.showTaskModal = false;
       this.showUpdatePopup = true;
       setTimeout(() => this.showUpdatePopup = false, 2000);
-      this.saveData();
-    }
-  }
+    });
+}
 
   openDeleteModal(index: number) {
     this.deleteIndex = index;
@@ -119,51 +159,75 @@ export class BoardComponent implements OnInit {
   }
 
   confirmDelete() {
-    if (this.deleteIndex !== null) {
-      this.tasks.splice(this.deleteIndex, 1);
+
+  if (this.deleteIndex === null) return;
+
+  const task = this.tasks[this.deleteIndex];
+
+  this.taskService.deleteTask(task.id)
+    .subscribe(() => {
+
+      this.tasks.splice(this.deleteIndex!, 1);
+
       this.showDeleteModal = false;
       this.showDeletePopup = true;
       setTimeout(() => this.showDeletePopup = false, 2000);
-      this.saveData();
-    }
-  }
+    });
+}
 
-  drop(event: CdkDragDrop<any[]>, status: string) {
+ drop(event: CdkDragDrop<any[]>, newStatus: string) {
 
   const draggedTask = event.item.data;
 
   // SAME COLUMN REORDER
   if (event.previousContainer === event.container) {
 
-    const columnTasks = this.getTasksByStatus(status);
+  const columnTasks = this.getTasksByStatus(newStatus);
 
-    moveItemInArray(
-      columnTasks,
-      event.previousIndex,
-      event.currentIndex
-    );
+  moveItemInArray(
+    columnTasks,
+    event.previousIndex,
+    event.currentIndex
+  );
 
-    // Rebuild tasks array to reflect new order
-    this.tasks = [
-      ...this.tasks.filter(t => t.status !== status),
-      ...columnTasks
-    ];
+  // 🔥 Update order for each task
+  columnTasks.forEach((task, index) => {
+    task.order = index;
 
-  }
+    this.taskService.updateTask(task.id, task)
+      .subscribe();
+  });
+
+  this.tasks = [
+    ...this.tasks.filter(t => t.status !== newStatus),
+    ...columnTasks
+  ];
+}
+
+  // MOVING BETWEEN COLUMNS
   else {
 
-    // MOVING BETWEEN COLUMNS
-    draggedTask.status = status;
-  }
+    // 🔥 IMPORTANT LINE
+    draggedTask.status = newStatus;
 
-  this.saveData();
+    this.taskService.updateTask(draggedTask.id, draggedTask)
+      .subscribe(res => {
+
+        // update local task array
+        const index = this.tasks.findIndex(t => t.id === draggedTask.id);
+        if (index !== -1) {
+          this.tasks[index] = res;
+        }
+
+      });
+  }
 }
 
   // ------------------ COLUMN METHODS ------------------
 
   dropColumn(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
-    this.saveData();
+    
   }
 
   openColumnModal() {
@@ -172,38 +236,49 @@ export class BoardComponent implements OnInit {
   }
 
   createColumn() {
-    if (!this.newColumnName.trim()) return;
 
-    const id = this.newColumnName.toLowerCase().replace(/\s+/g, '');
+  if (!this.newColumnName.trim()) return;
 
-    this.columns.push({
-      id: id,
-      name: this.newColumnName,
-      isDefault: false
+  const columnData = {
+    name: this.newColumnName,
+    user: this.currentUser
+  };
+
+  this.columnService.createColumn(columnData)
+    .subscribe((res: any) => {
+
+      this.columns.push(res);
+
+      this.showColumnModal = false;
+      this.newColumnName = '';
+
+      this.showColumnSuccessPopup = true;
+      setTimeout(() => this.showColumnSuccessPopup = false, 2000);
     });
-
-    this.showColumnModal = false;
-    this.showColumnSuccessPopup = true;
-    setTimeout(() => this.showColumnSuccessPopup = false, 2000);
-    this.saveData();
-  }
-
-  openColumnDeleteModal(id: string) {
-    this.columnToDeleteKey = id;
-    this.showColumnDeleteModal = true;
-  }
-
+}
+openColumnDeleteModal(id: string) {
+  this.columnToDeleteKey = id;
+  this.showColumnDeleteModal = true;
+}
   confirmColumnDelete() {
-    if (!this.columnToDeleteKey) return;
 
-    this.tasks = this.tasks.filter(t => t.status !== this.columnToDeleteKey);
-    this.columns = this.columns.filter(c => c.id !== this.columnToDeleteKey);
+  if (!this.columnToDeleteKey) return;
 
-    this.showColumnDeleteModal = false;
-    this.showColumnDeleteSuccessPopup = true;
-    setTimeout(() => this.showColumnDeleteSuccessPopup = false, 2000);
-    this.saveData();
-  }
+  const column = this.columns.find(c => c.id === this.columnToDeleteKey);
+
+  if (!column) return;
+
+  this.columnService.deleteColumn(column.id)
+    .subscribe(() => {
+
+      this.columns = this.columns.filter(c => c.id !== column.id);
+      this.tasks = this.tasks.filter(t => t.status !== column.id);
+
+      this.showColumnDeleteModal = false;
+      this.showColumnDeleteSuccessPopup = true;
+      setTimeout(() => this.showColumnDeleteSuccessPopup = false, 2000);
+    });
+}
 
   openEditColumn(col: any) {
     this.editingColumnId = col.id;
@@ -216,23 +291,12 @@ export class BoardComponent implements OnInit {
     this.editingColumnId = null;
     this.showColumnEditSuccessPopup = true;
     setTimeout(() => this.showColumnEditSuccessPopup = false, 2000);
-    this.saveData();
+    
   }
 
   // ------------------ STORAGE ------------------
 
-  saveData() {
-  localStorage.setItem(`tasks_${this.currentUser}`, JSON.stringify(this.tasks));
-  localStorage.setItem(`columns_${this.currentUser}`, JSON.stringify(this.columns));
-}
-
-  loadData() {
-  const savedTasks = localStorage.getItem(`tasks_${this.currentUser}`);
-  const savedColumns = localStorage.getItem(`columns_${this.currentUser}`);
-
-  if (savedTasks) this.tasks = JSON.parse(savedTasks);
-  if (savedColumns) this.columns = JSON.parse(savedColumns);
-}
+  
 
   getConnectedLists() {
     return this.columns.map(col => col.id);
@@ -255,7 +319,7 @@ sortByPriority(type: string) {
     return a.priority === type ? -1 : 1;
   });
 
-  this.saveData();
+  
 }
 
 sortByDate(type: string) {
@@ -265,7 +329,7 @@ sortByDate(type: string) {
     return type === 'asc' ? d1 - d2 : d2 - d1;
   });
 
-  this.saveData();
+  
 }
 highlight(text: string): string {
   if (!this.searchText) return text;
@@ -274,8 +338,16 @@ highlight(text: string): string {
   return text.replace(regex, '<mark>$1</mark>');
 }
 logout() {
-  localStorage.removeItem('loggedUser');
-  this.router.navigate(['/login']);
+
+  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+  this.authService.logout(user.id)
+    .subscribe(() => {
+
+      localStorage.removeItem('currentUser');
+      this.router.navigate(['/login']);
+
+    });
 }
 getUserInitial(): string {
   return this.currentUser ? this.currentUser.charAt(0).toUpperCase() : '';

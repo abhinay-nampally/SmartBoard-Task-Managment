@@ -3,11 +3,7 @@ import { authGuard } from './auth.guard';
 
 const routes: Routes = [
 
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   {
     path: 'login',
@@ -32,6 +28,7 @@ const routes: Routes = [
   }
 
 ];
+
 export const appConfig = {
   providers: [provideRouter(routes)]
 };

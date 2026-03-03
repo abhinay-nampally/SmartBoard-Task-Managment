@@ -1,31 +1,59 @@
 <div class="auth-container">
-
   <div class="auth-box">
     <h2>Create Account</h2>
 
-    <input type="email"
-           placeholder="Email"
-           [(ngModel)]="email">
+    <form (ngSubmit)="register()" novalidate>
 
-    <input type="password"
-           placeholder="Password"
-           [(ngModel)]="password">
+      <!-- Email -->
+      <input
+        type="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+        name="email"
+        required>
 
-    <input type="password"
-           placeholder="Confirm Password"
-           [(ngModel)]="confirmPassword">
+      <!-- Password with Eye Icon -->
+      <div class="password-wrapper">
+        <input
+        [type]="showPassword ? 'text' : 'password'"
+        placeholder="Password"
+         [(ngModel)]="password"
+        (input)="checkPasswordStrength()"
+        name="password"
+        required>
+        <p class="strength" *ngIf="passwordStrength">
+  Strength: {{ passwordStrength }}
+</p>
 
-    <button (click)="register()">Register</button>
+        <i
+          class="fa"
+          [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+          (click)="showPassword = !showPassword">
+        </i>
+      </div>
 
-    <p class="error" *ngIf="error">{{error}}</p>
+      <!-- Confirm Password (NO TOGGLE) -->
+      <input
+        type="password"
+        placeholder="Confirm Password"
+        [(ngModel)]="confirmPassword"
+        name="confirmPassword"
+        required>
+
+       <button type="submit">
+  {{ isLoading ? 'Registering...' : 'Register' }}
+</button>
+      <p class="error" *ngIf="error">{{ error }}</p>
+      <p class="success" *ngIf="successMessage">
+  {{ successMessage }}
+</p>
+
+    </form>
 
     <p class="switch">
       Already have an account?
-      <span (click)="goToLogin()">
-        Login
-      </span>
+      <span (click)="goToLogin()">Login</span>
     </p>
 
   </div>
-
 </div>

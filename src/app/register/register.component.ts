@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -16,41 +17,98 @@ export class RegisterComponent {
   password: string = '';
   confirmPassword: string = '';
   error: string = '';
+  showPassword: boolean = false;
+  successMessage: string = '';
+  passwordStrength: string = '';
+  isLoading: boolean = false;
 
-  constructor(private router: Router) {}
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   register() {
-  if (!this.email || !this.password || !this.confirmPassword) {
-    alert('Fill all fields');
+
+  this.error = '';
+  this.successMessage = '';
+  this.isLoading = true;
+
+  if (!this.email.trim() || !this.password.trim() || !this.confirmPassword.trim()) {
+    this.error = "All fields are required";
+    return;
+  }
+
+  if (!this.email.includes('@')) {
+    this.error = "Enter a valid email";
+    return;
+  }
+
+  const strongPassword =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!strongPassword.test(this.password)) {
+    this.error =
+      "Password must contain at least 8 characters, including uppercase, lowercase, number and special character";
     return;
   }
 
   if (this.password !== this.confirmPassword) {
-    alert('Passwords do not match');
+    this.error = "Passwords do not match";
     return;
   }
 
-  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  // 🔎 Check if user already exists
+  this.authService.checkUser(this.email).subscribe(users => {
 
-  const userExists = users.find((u: any) => u.email === this.email);
+    if (users.length > 0) {
+      this.error = "Email already registered";
+      return;
+    }
 
-  if (userExists) {
-    alert('User already exists');
-    return;
-  }
+    // ✅ If email does not exist → register user
+    this.authService.register({
+      email: this.email,
+      password: this.password
+    }).subscribe({
+      next: () => {
+        this.successMessage = "Registration successful ✅";
+        this.isLoading = false;
+        this.email = '';
+this.password = '';
+this.confirmPassword = '';
 
-  users.push({
-    email: this.email,
-    password: this.password
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
+      },
+      error: () => {
+        this.error = "Registration failed";
+        this.isLoading = false;
+      }
+    });
+
   });
 
-  localStorage.setItem('users', JSON.stringify(users));
-
-  alert('Registration successful');
-
-  this.router.navigate(['/login']);
 }
 goToLogin() {
   this.router.navigate(['/login']);
+}
+checkPasswordStrength() {
+  const password = this.password;
+
+  if (password.length < 6) {
+    this.passwordStrength = 'Weak';
+  } else if (
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)
+  ) {
+    this.passwordStrength = 'Medium';
+  }
+
+  if (
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)
+  ) {
+    this.passwordStrength = 'Strong';
+  }
 }
 }
