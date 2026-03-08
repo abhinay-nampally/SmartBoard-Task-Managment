@@ -3,9 +3,23 @@
     {
       "name": "Abhinay Nampally",
       "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi@7780",
+      "password": "Abhinay@7780",
       "isLoggedIn": false,
       "id": 1
+    },
+    {
+      "name": "Akshit Saram",
+      "email": "akshit1729@gmail.com",
+      "password": "Akshit@315",
+      "isLoggedIn": false,
+      "id": 2
+    },
+    {
+      "name": "Akshit Saram",
+      "email": "akshith1729@gmail.com",
+      "password": "Akshith@7780",
+      "isLoggedIn": false,
+      "id": 3
     }
   ],
   "tasks": [
@@ -99,6 +113,16 @@
       "user": "Abhinay Nampally",
       "order": 2,
       "id": 13
+    },
+    {
+      "title": "api",
+      "desc": "create api",
+      "priority": "High",
+      "status": "completed",
+      "date": "2026-03-31",
+      "user": "Akshit Saram",
+      "order": 0,
+      "id": 14
     }
   ],
   "columns": []
