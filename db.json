@@ -1,91 +1,11 @@
 {
   "users": [
     {
+      "name": "Abhinay Nampally",
       "email": "abhinaynampally3889@gmail.com",
       "password": "Abhi@7780",
-      "id": 1,
-      "isLoggedIn": false
-    },
-    {
-      "email": "akshit12@gmail.com",
-      "password": "Akshit@123",
-      "id": 2,
-      "isLoggedIn": false
-    },
-    {
-      "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi123",
-      "id": 3
-    },
-    {
-      "email": "ravi1234@gmail.com",
-      "password": "Ravi@123",
-      "id": 4
-    },
-    {
-      "email": "anil123@gmail.com",
-      "password": "Anil@123",
-      "id": 5
-    },
-    {
-      "email": "Padma9848@gmail.com",
-      "password": "Padma@9848",
-      "id": 6
-    },
-    {
-      "email": "mallesh123@gmail.com",
-      "password": "Mallesh@9912",
-      "id": 7
-    },
-    {
-      "email": "vaishnavi9490@gmail.com",
-      "password": "Vaishnavi29490",
-      "id": 8
-    },
-    {
-      "email": "nithin123@gmail.com",
-      "password": "9848777641",
-      "id": 9
-    },
-    {
-      "email": "adatishivakumar3@gmail.com",
-      "password": "Atidi@123",
-      "id": 10
-    },
-    {
-      "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi@7780",
-      "id": 11
-    },
-    {
-      "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi@7780",
-      "id": 12
-    },
-    {
-      "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi@7780",
-      "id": 13
-    },
-    {
-      "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi@7780",
-      "id": 14
-    },
-    {
-      "email": "abhinaynampally3889@gmail.com",
-      "password": "Abhi@7780",
-      "id": 15
-    },
-    {
-      "email": "abhinaynampally39@gmail.com",
-      "password": "Abhi@7780",
-      "id": 16
-    },
-    {
-      "email": "joshitha123@gmail.com",
-      "password": "Joshitha@123",
-      "id": 17
+      "isLoggedIn": false,
+      "id": 1
     }
   ],
   "tasks": [
@@ -149,6 +69,36 @@
       "date": "",
       "user": "abhinaynampally3889@gmail.com",
       "id": 9
+    },
+    {
+      "title": "",
+      "desc": "",
+      "priority": "Low",
+      "status": "demo",
+      "date": "",
+      "user": "Abhinay Nampally",
+      "order": 0,
+      "id": 11
+    },
+    {
+      "title": "api",
+      "desc": "cretae mock api",
+      "priority": "Low",
+      "status": "new",
+      "date": "2026-03-07",
+      "user": "Abhinay Nampally",
+      "order": 1,
+      "id": 12
+    },
+    {
+      "title": "Logo",
+      "desc": "Create a logo",
+      "priority": "Medium",
+      "status": "completed",
+      "date": "2026-03-16",
+      "user": "Abhinay Nampally",
+      "order": 2,
+      "id": 13
     }
   ],
   "columns": []

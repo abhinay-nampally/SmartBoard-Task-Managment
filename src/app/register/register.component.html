@@ -3,6 +3,13 @@
     <h2>Create Account</h2>
 
     <form (ngSubmit)="register()" novalidate>
+      <!-- Username -->
+<input
+  type="text"
+  placeholder="Full Name"
+  [(ngModel)]="name"
+  name="name"
+  required>
 
       <!-- Email -->
       <input

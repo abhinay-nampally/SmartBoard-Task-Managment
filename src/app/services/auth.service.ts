@@ -29,4 +29,10 @@ export class AuthService {
     { isLoggedIn: false }
   );
 }
+updateUser(id: number, userData: any) {
+  return this.http.put(
+    `http://localhost:3000/users/${id}`,
+    userData
+  );
+}
 }

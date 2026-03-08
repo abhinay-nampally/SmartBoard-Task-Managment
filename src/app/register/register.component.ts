@@ -21,6 +21,7 @@ export class RegisterComponent {
   successMessage: string = '';
   passwordStrength: string = '';
   isLoading: boolean = false;
+  name:string = '';
 
 
   constructor(
@@ -34,8 +35,9 @@ export class RegisterComponent {
   this.successMessage = '';
   this.isLoading = true;
 
-  if (!this.email.trim() || !this.password.trim() || !this.confirmPassword.trim()) {
+  if (!this.name.trim() || !this.email.trim() || !this.password.trim() || !this.confirmPassword.trim()) {
     this.error = "All fields are required";
+    this.isLoading=false;
     return;
   }
 
@@ -68,13 +70,16 @@ export class RegisterComponent {
 
     // ✅ If email does not exist → register user
     this.authService.register({
-      email: this.email,
-      password: this.password
-    }).subscribe({
+  name: this.name,
+  email: this.email,
+  password: this.password,
+  isLoggedIn: false
+}).subscribe({
       next: () => {
         this.successMessage = "Registration successful ✅";
         this.isLoading = false;
         this.email = '';
+        this.name='';
 this.password = '';
 this.confirmPassword = '';
 

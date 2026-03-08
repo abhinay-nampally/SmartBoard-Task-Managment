@@ -22,11 +22,11 @@ export class BoardComponent implements OnInit {
   tasks: any[] = [];
 
   columns: any[] = [
-    { id: 'new', name: 'NEW TASK', isDefault: true },
-    { id: 'progress', name: 'IN PROGRESS', isDefault: true },
-    { id: 'completed', name: 'COMPLETED', isDefault: true },
-    { id: 'delivered', name: 'DELIVERED', isDefault: true }
-  ];
+ { id:'new', name:'NEW TASK', color:'#3b82f6' },
+ { id:'progress', name:'IN PROGRESS', color:'#f59e0b' },
+ { id:'completed', name:'COMPLETED', color:'#10b981' },
+ { id:'delivered', name:'DELIVERED', color:'#8b5cf6' }
+];
 
   // ------------------ UI STATES ------------------
 
@@ -57,6 +57,18 @@ export class BoardComponent implements OnInit {
   searchText: string = ''; 
   currentUser: string = '';
   showUserMenu: boolean = false;
+  showProfileModal = false;
+newProfilePassword: string = '';
+profileSuccessMessage: string = '';
+columnColors: any = {
+  new: "#3498db",
+  progress: "#f39c12",
+  completed: "#2ecc71",
+  delivered: "#9b59b6"
+};
+
+showProfileUpdatePopup = false;
+profileErrorMessage: string = '';
   constructor(
   private router: Router,
   private taskService: TaskService,
@@ -74,7 +86,7 @@ export class BoardComponent implements OnInit {
   }
 
   const parsedUser = JSON.parse(user);
-  this.currentUser = parsedUser.email;
+  this.currentUser = parsedUser.name;
 
   // Load Tasks
   this.taskService.getTasks(this.currentUser)
@@ -83,13 +95,28 @@ export class BoardComponent implements OnInit {
     });
 
   // Load Columns
-  this.columnService.getColumns(this.currentUser)
-    .subscribe(cols => {
+this.columnService.getColumns(this.currentUser)
+  .subscribe(cols => {
 
-      if (cols.length > 0) {
-        this.columns = cols;
+    const defaultColumns = [
+      { id:'new', name:'NEW TASK', color:'#3b82f6' },
+      { id:'progress', name:'IN PROGRESS', color:'#f59e0b' },
+      { id:'completed', name:'COMPLETED', color:'#10b981' },
+      { id:'delivered', name:'DELIVERED', color:'#8b5cf6' }
+    ];
+
+    // merge default + database columns
+    const merged = [...defaultColumns];
+
+    cols.forEach((c:any)=>{
+      if(!merged.find(m => m.id === c.id)){
+        merged.push(c);
       }
     });
+
+    this.columns = merged;
+
+  });
 }
 
   // ------------------ TASK METHODS ------------------
@@ -238,11 +265,33 @@ export class BoardComponent implements OnInit {
   createColumn() {
 
   if (!this.newColumnName.trim()) return;
+  const id = this.newColumnName.toLowerCase().replace(/\s+/g,'')+ Date.now();
 
-  const columnData = {
-    name: this.newColumnName,
-    user: this.currentUser
-  };
+if (this.columns.find(c => c.id === id)) {
+  alert("Column already exists");
+  return;
+}
+
+  const colors = [
+ "#3b82f6",
+ "#10b981",
+ "#f59e0b",
+ "#ef4444",
+ "#8b5cf6",
+ "#06b6d4"
+];
+
+const randomColor = colors[Math.floor(Math.random()*colors.length)];
+
+const columnId =
+this.newColumnName.toLowerCase().replace(/\s+/g,'') + Date.now();
+
+const columnData = {
+ id: columnId,
+ name: this.newColumnName,
+ color: randomColor,
+ user: this.currentUser
+};
 
   this.columnService.createColumn(columnData)
     .subscribe((res: any) => {
@@ -359,8 +408,119 @@ toggleUserMenu() {
 }
 
 goToProfile() {
-  alert('Profile page coming soon 😎');
+  this.showProfileModal = true;
+}
+updateProfile() {
+  this.profileErrorMessage = '';
+
+  if (!this.newProfilePassword.trim()) return;
+
+  const strongPassword =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+  if (!strongPassword.test(this.newProfilePassword)) {
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+  // 🚨 CHECK IF SAME PASSWORD
+  if (user.password === this.newProfilePassword) {
+  this.profileErrorMessage = "New password cannot be same as old password";
+  return;
 }
 
+  const updatedUser = {
+    ...user,
+    password: this.newProfilePassword
+  };
+
+  this.authService.updateUser(user.id, updatedUser)
+    .subscribe(res => {
+
+      localStorage.setItem('currentUser', JSON.stringify(res));
+
+      this.showProfileUpdatePopup = true;
+
+      setTimeout(() => {
+        this.showProfileUpdatePopup = false;
+        this.showProfileModal = false;
+        this.newProfilePassword = '';
+      }, 2000);
+
+    });
+}
+getCompletedTasks() {
+  return this.tasks.filter(
+    t => t.status === 'completed' || t.status === 'delivered'
+  ).length;
+}
+
+getProgress() {
+  if (this.tasks.length === 0) return 0;
+
+  return (this.getCompletedTasks() / this.tasks.length) * 100;
+}
+getCompletionPercent() {
+
+  const total = this.getTotalTasks();
+
+  if (total === 0) return 0;
+
+  const completed = this.getCompletedTasks();
+
+  return Math.round((completed / total) * 100);
+}
+getColumnProgress(status: string) {
+
+  const total = this.getTotalTasks();
+
+  if (total === 0) return 0;
+
+  const count = this.getColumnTaskCount(status);
+
+  return (count / total) * 100;
+}
+getColumnTaskCount(status: string) {
+  return this.tasks.filter(t => t.status === status).length;
+}
+
+getColumnProgressPercent(status: string) {
+
+  const total = this.getTotalTasks();
+
+  if (total === 0) return 0;
+
+  const count = this.getColumnTaskCount(status);
+
+  return Math.round((count / total) * 100);
+}
+getTotalTasks() {
+  let total = 0;
+
+  this.columns.forEach(col => {
+    total += this.getTasksByStatus(col.id).length;
+  });
+
+  return total;
+}
+getAvatarColor(): string {
+
+  const colors = [
+    "#6366f1",   // indigo
+    "#3b82f6",   // blue
+    "#10b981",   // green
+    "#f59e0b",   // orange
+    "#ef4444",   // red
+    "#8b5cf6",   // purple
+    "#06b6d4"    // cyan
+  ];
+
+  if (!this.currentUser) return colors[0];
+
+  let index = this.currentUser.charCodeAt(0) % colors.length;
+
+  return colors[index];
+}
 
 }

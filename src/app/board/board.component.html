@@ -66,19 +66,68 @@
     </button>
    <div class="user-section" (click)="toggleUserMenu()">
 
-  <div class="avatar">
-    {{ getUserInitial() }}
-  </div>
-
-  <div class="user-email">
-    {{ currentUser }}
-  </div>
+  <div class="avatar"
+     [style.background]="getAvatarColor()">
+  {{ getUserInitial() }}
+</div>
 
 </div>
 <div class="user-dropdown" *ngIf="showUserMenu">
+
+  <div class="user-info">
+    {{ currentUser }}
+  </div>
+
   <button (click)="goToProfile()">👤 Profile</button>
   <button (click)="logout()">🚪 Logout</button>
+
 </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= PREMIUM ANALYTICS PANEL ================= -->
+
+<div class="analytics-container">
+
+  <div class="analytics-header">
+    <div>
+      <h2>Task Progress</h2>
+      <p>{{ getCompletedTasks() }} / {{ getTotalTasks() }} Tasks Completed• {{ getCompletionPercent() }}%</p>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div
+      *ngFor="let col of columns"
+      class="progress-segment"
+      [style.width.%]="getColumnProgress(col.id)"
+      [style.background]="col.color">
+    </div>
+  </div>
+
+  <!-- Dynamic Counters -->
+  <div class="analytics-grid">
+
+    <!-- Total -->
+    <div class="analytics-card total">
+      <span>Total</span>
+      <h3>{{ getTotalTasks() }}</h3>
+    </div>
+
+    <!-- Dynamic Columns -->
+    <div
+      class="analytics-card"
+      *ngFor="let col of columns"
+      [style.borderTop]="'4px solid ' + col.color">
+
+      <span>{{ col.name }}</span>
+      <h3>{{ getColumnTaskCount(col.id) }}</h3>
+
+    </div>
 
   </div>
 
@@ -98,15 +147,24 @@
     <!-- COLUMN HEADER -->
     
 
-      <div class="column-title">
+      
+
+
+  <div class="column-title" [style.background]="col.color">
+
+  <span class="column-count">
+    {{col.name | uppercase}}
+    <span class="count-badge">
+      {{getTasksByStatus(col.id).length}}
+    </span>
+  </span>
+
+  <span class="percent">
+    {{ getColumnProgressPercent(col.id) }}%
+  </span>
 
   <!-- NORMAL MODE -->
   <ng-container *ngIf="editingColumnId !== col.id">
-
-    <span>
-      {{col.name | uppercase}}
-      ({{getTasksByStatus(col.id).length}})
-    </span>
 
     <div class="column-actions">
       <button class="edit-col-btn"
@@ -121,6 +179,7 @@
     </div>
 
   </ng-container>
+  
 
   <!-- EDIT MODE -->
   <ng-container *ngIf="editingColumnId === col.id">
@@ -352,4 +411,47 @@
 
 <div class="update-popup" *ngIf="showColumnEditSuccessPopup">
   ✔ Column Name Updated Successfully
+</div>
+<div class="update-popup" *ngIf="showProfileUpdatePopup">
+  ✔ Profile Updated Successfully
+</div>
+
+
+<!-- ================= PROFILE MODAL ================= -->
+
+<div class="modal-backdrop" *ngIf="showProfileModal">
+  <div class="modal-box">
+
+    <h3>👤 Update Profile</h3>
+
+    <input
+      type="email"
+      [value]="currentUser"
+      disabled
+    />
+
+    <input
+  type="password"
+  placeholder="New Password"
+  [(ngModel)]="newProfilePassword"
+/>
+
+<p class="profile-error" *ngIf="profileErrorMessage">
+  {{ profileErrorMessage }}
+</p>
+    <div class="modal-actions">
+      <button class="cancel-btn"
+              (click)="showProfileModal=false">
+        Cancel
+      </button>
+
+      <button class="submit-btn"
+              (click)="updateProfile()">
+        Update Profile
+      </button>
+    </div>
+
+    
+
+  </div>
 </div>
