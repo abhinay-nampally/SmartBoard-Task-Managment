@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -31,6 +32,17 @@ newPassword: string = '';
   passwordError: string = '';
 
   showPassword: boolean = false;
+  // OTP BOXES
+otpDigits: string[] = ["", "", "", "", "", ""];
+
+
+// RESEND TIMER
+timer: number = 30;
+canResend: boolean = false;
+
+// PASSWORD STRENGTH
+passwordStrength: string = '';
+passwordStrengthWidth: number = 0;
 
   // Forgot password
   
@@ -103,10 +115,25 @@ newPassword: string = '';
   })
   .then(res => res.json())
   .then(data => {
-    alert("OTP sent to your email");
-    this.otpSent = true;
-  });
-
+ Swal.fire({
+  icon: 'success',
+  title: 'OTP Sent',
+  text: 'Check your email for the verification code',
+  confirmButtonText: 'Got it',
+  confirmButtonColor: '#5b86e5',
+  background: '#ffffff',
+  width: '380px',
+  padding: '2em',
+  showClass: {
+    popup: 'animate__animated animate__zoomIn'
+  },
+  hideClass: {
+    popup: 'animate__animated animate__zoomOut'
+  }
+});
+  this.otpSent = true;
+  this.startTimer();
+});
 }
 verifyOTP() {
 
@@ -127,7 +154,13 @@ verifyOTP() {
       this.showResetPassword = true;
     }
     else{
-      alert("Invalid OTP");
+     Swal.fire({
+  icon: 'error',
+  title: 'Invalid OTP',
+  text: 'The code you entered is incorrect',
+  confirmButtonColor: '#ff4d4f',
+  width: '360px'
+});
     }
 
   });
@@ -156,12 +189,107 @@ resetPassword() {
       })
     })
     .then(() => {
-      alert("Password reset successful");
+      Swal.fire({
+  icon: 'success',
+  title: 'Password Reset',
+  text: 'Your password has been updated successfully',
+  confirmButtonText: 'Login Now',
+  confirmButtonColor: '#36d1dc',
+  width: '360px',
+  padding: '2em',
+  backdrop: `
+    rgba(0,0,0,0.6)
+  `,
+  showClass: {
+    popup: 'animate__animated animate__zoomIn'
+  }
+});
       this.showForgotModal = false;
     });
 
   });
 
 }
+
+
+
+startTimer() {
+
+  this.timer = 30;
+  this.canResend = false;
+
+  const interval = setInterval(() => {
+
+    this.timer--;
+
+    if (this.timer <= 0) {
+      this.canResend = true;
+      clearInterval(interval);
+    }
+
+  }, 1000);
+
+}
+checkPasswordStrength() {
+
+  const password = this.newPassword;
+
+  let strength = 0;
+
+  if(password.length >= 6) strength++;
+  if(/[A-Z]/.test(password)) strength++;
+  if(/[0-9]/.test(password)) strength++;
+  if(/[!@#$%^&*]/.test(password)) strength++;
+
+  if(strength <= 1){
+    this.passwordStrength = "Weak";
+    this.passwordStrengthWidth = 25;
+  }
+  else if(strength == 2){
+    this.passwordStrength = "Medium";
+    this.passwordStrengthWidth = 60;
+  }
+  else{
+    this.passwordStrength = "Strong";
+    this.passwordStrengthWidth = 100;
+  }
+
+  
+}
+moveOtp(event: KeyboardEvent, index: number) {
+
+  const input = event.target as HTMLInputElement;
+  const boxes = document.querySelectorAll('.otp-box') as NodeListOf<HTMLInputElement>;
+
+  // Allow only numbers
+  if (!/^[0-9]$/.test(input.value) && event.key !== "Backspace") {
+    this.otpDigits[index] = '';
+    return;
+  }
+
+  // Move forward
+  if (input.value && index < boxes.length - 1) {
+    boxes[index + 1].focus();
+  }
+
+  // Move backward on backspace
+  if (event.key === "Backspace" && index > 0 && !input.value) {
+    boxes[index - 1].focus();
+  }
+
+  // Combine OTP
+  this.enteredOTP = this.otpDigits.join('');
+}
+formatOtp() {
+  // allow numbers only
+  this.enteredOTP = this.enteredOTP.replace(/[^0-9]/g, '');
+
+  // limit to 6 digits
+  if (this.enteredOTP.length > 6) {
+    this.enteredOTP = this.enteredOTP.slice(0, 6);
+  }
+}
+
+
 
 }

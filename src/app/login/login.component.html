@@ -70,25 +70,47 @@
     <button (click)="sendOTP()">Send OTP</button>
 
     <!-- OTP SECTION -->
-    <div *ngIf="otpSent">
+<div *ngIf="otpSent">
 
-      <input
-        placeholder="Enter OTP"
-        [(ngModel)]="enteredOTP"
-      />
+<div class="otp-container">
+  <input
+    type="text"
+    maxlength="6"
+    class="otp-single"
+    [(ngModel)]="enteredOTP"
+    (input)="formatOtp()"
+    placeholder="------"
+  />
+</div>
 
-      <input
-        type="password"
-        placeholder="New Password"
-        [(ngModel)]="newPassword"
-      />
+</div>
+<p class="timer" *ngIf="!canResend">
+Resend OTP in {{timer}}s
+</p>
 
-      <button (click)="resetPassword()">Reset Password</button>
+<button *ngIf="canResend" (click)="sendOTP()">
+Resend OTP
+</button>
 
-    </div>
+<input
+type="password"
+placeholder="New Password"
+[(ngModel)]="newPassword"
+(input)="checkPasswordStrength()"
+/>
 
-    <button (click)="showForgotModal=false">Cancel</button>
+<div class="strength-bar">
+<div class="strength-fill"
+[style.width.%]="passwordStrengthWidth"></div>
+</div>
 
-  </div>
+<p class="strength-text">{{passwordStrength}}</p>
 
+<button (click)="verifyOTP()">Verify OTP</button>
+
+<button (click)="resetPassword()" *ngIf="showResetPassword">
+Reset Password
+</button>
+
+</div>
 </div>

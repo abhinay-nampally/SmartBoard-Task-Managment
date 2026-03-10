@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { TaskService } from '../services/task.service';
 import { ColumnService } from '../services/column.service';
 import { AuthService } from '../services/auth.service';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-board',
@@ -66,15 +67,19 @@ columnColors: any = {
   completed: "#2ecc71",
   delivered: "#9b59b6"
 };
-
+showFullAnalytics = false;
 showProfileUpdatePopup = false;
 profileErrorMessage: string = '';
+totalTasks:number = 0;
+completedTasks:number = 0;
+
   constructor(
   private router: Router,
   private taskService: TaskService,
   private columnService: ColumnService,
   private authService: AuthService
 ) {}
+
   // ------------------ INIT ------------------
  ngOnInit() {
 
@@ -90,9 +95,30 @@ profileErrorMessage: string = '';
 
   // Load Tasks
   this.taskService.getTasks(this.currentUser)
-    .subscribe(data => {
-      this.tasks = data;
-    });
+.subscribe(data => {
+
+  this.tasks = data;
+
+  // animate after tasks load
+  setTimeout(() => {
+
+    this.animateValue(
+      0,
+      this.getTotalTasks(),
+      800,
+      (v)=>this.totalTasks=v
+    );
+
+    this.animateValue(
+      0,
+      this.getCompletedTasks(),
+      800,
+      (v)=>this.completedTasks=v
+    );
+
+  },200);
+
+});
 
   // Load Columns
 this.columnService.getColumns(this.currentUser)
@@ -521,6 +547,175 @@ getAvatarColor(): string {
   let index = this.currentUser.charCodeAt(0) % colors.length;
 
   return colors[index];
+}
+isTaskOverdue(task:any){
+
+const today = new Date();
+
+return new Date(task.date) < today &&
+       task.status !== 'completed' &&
+       task.status !== 'delivered';
+
+}
+isTaskDueSoon(task:any){
+
+const today = new Date();
+
+const dueDate = new Date(task.date);
+
+const diff = (dueDate.getTime() - today.getTime()) / (1000*60*60*24);
+
+return diff >= 0 && diff <= 2 &&
+       task.status !== 'completed' &&
+       task.status !== 'delivered';
+
+}
+isTaskOnTrack(task:any){
+
+const today = new Date();
+
+const dueDate = new Date(task.date);
+
+const diff = (dueDate.getTime() - today.getTime()) / (1000*60*60*24);
+
+return diff > 2 &&
+       task.status !== 'completed' &&
+       task.status !== 'delivered';
+
+}
+getOverdueTasks(){
+
+return this.tasks.filter(t => this.isTaskOverdue(t)).length;
+
+}
+getColumnIcon(colId:string){
+
+if(colId === 'new') return 'assignment';
+if(colId === 'progress') return 'autorenew';
+if(colId === 'completed') return 'check_circle';
+if(colId === 'delivered') return 'local_shipping';
+
+/* Any new column created by user */
+return 'view_kanban';
+
+}
+openAnalytics() {
+
+this.showFullAnalytics = true;
+
+setTimeout(() => {
+
+  this.initCharts();
+
+}, 500);
+
+}
+
+closeAnalytics(){
+  this.showFullAnalytics = false;
+}
+initCharts(){
+
+const columnLabels = this.columns.map(c => c.name);
+const columnData = this.columns.map(c => this.getColumnTaskCount(c.id));
+
+new Chart("columnChart",{
+
+type:'doughnut',
+
+data:{
+labels:columnLabels,
+datasets:[{
+data:columnData,
+backgroundColor:this.columns.map(c => c.color)
+}]
+}
+
+});
+
+const priorityData = [
+this.tasks.filter(t=>t.priority==="High").length,
+this.tasks.filter(t=>t.priority==="Medium").length,
+this.tasks.filter(t=>t.priority==="Low").length
+];
+
+new Chart("priorityChart",{
+
+type:'doughnut',
+
+data:{
+labels:["High","Medium","Low"],
+datasets:[{
+data:priorityData,
+backgroundColor:["#ef4444","#f59e0b","#10b981"]
+}]
+}
+
+});
+
+const dueData = [
+this.getOverdueTasks(),
+this.tasks.filter(t=>this.isTaskDueSoon(t)).length,
+this.tasks.filter(t=>this.isTaskOnTrack(t)).length
+];
+
+new Chart("dueChart",{
+
+type:'doughnut',
+
+data:{
+labels:["Overdue","Due Soon","On Track"],
+datasets:[{
+data:dueData,
+backgroundColor:["#ef4444","#f59e0b","#10b981"]
+}]
+}
+
+});
+
+const weeklyData = [
+2,4,3,5,6,3,4
+];
+
+new Chart("weeklyChart",{
+
+type:'line',
+
+data:{
+labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+datasets:[{
+label:"Completed Tasks",
+data:weeklyData,
+borderColor:"#6366f1",
+fill:false
+}]
+}
+
+});
+
+}
+animateValue(start:number,end:number,duration:number,callback:(value:number)=>void){
+
+let startTimestamp:any=null;
+
+const step=(timestamp:any)=>{
+
+if(!startTimestamp) startTimestamp=timestamp;
+
+const progress=Math.min((timestamp-startTimestamp)/duration,1);
+
+const value=Math.floor(progress*(end-start)+start);
+
+callback(value);
+
+if(progress<1){
+requestAnimationFrame(step);
+}
+
+};
+
+requestAnimationFrame(step);
+
 }
 
 }

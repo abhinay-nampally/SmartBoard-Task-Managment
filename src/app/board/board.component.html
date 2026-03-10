@@ -94,48 +94,208 @@
 
   <div class="analytics-header">
     <div>
-      <h2>Task Progress</h2>
+      <div class="analytics-title">
+
+<h2>Task Progress</h2>
+
+<button class="analytics-arrow"
+        (click)="openAnalytics()">
+
+<span class="material-icons">
+arrow_forward
+</span>
+
+</button>
+
+</div>
       <p>{{ getCompletedTasks() }} / {{ getTotalTasks() }} Tasks Completed• {{ getCompletionPercent() }}%</p>
     </div>
   </div>
 
   <!-- Progress Bar -->
-  <div class="progress-bar">
-    <div
-      *ngFor="let col of columns"
-      class="progress-segment"
-      [style.width.%]="getColumnProgress(col.id)"
-      [style.background]="col.color">
-    </div>
-  </div>
+ <!-- Progress Bar -->
+<div class="progress-bar">
 
-  <!-- Dynamic Counters -->
-  <div class="analytics-grid">
-
-    <!-- Total -->
-    <div class="analytics-card total">
-      <span>Total</span>
-      <h3>{{ getTotalTasks() }}</h3>
-    </div>
-
-    <!-- Dynamic Columns -->
-    <div
-      class="analytics-card"
-      *ngFor="let col of columns"
-      [style.borderTop]="'4px solid ' + col.color">
-
-      <span>{{ col.name }}</span>
-      <h3>{{ getColumnTaskCount(col.id) }}</h3>
-
-    </div>
-
+  <div
+    *ngFor="let col of columns"
+    class="progress-segment"
+    [style.width.%]="getColumnProgress(col.id)"
+    [style.background]="col.color">
   </div>
 
 </div>
 
+
+<!-- Analytics Cards -->
+<div class="analytics-grid">
+
+<!-- TOTAL -->
+<div class="analytics-card total">
+
+<span class="material-icons dash-icon">
+dashboard
+</span>
+
+<span>Total Tasks</span>
+<h3>{{ totalTasks }}</h3>
+
+</div>
+
+
+<!-- OVERDUE -->
+<div class="analytics-card overdue">
+
+<span class="material-icons dash-icon">
+warning
+</span>
+
+<span>Overdue</span>
+<h3>{{ getOverdueTasks() }}</h3>
+
+</div>
+
+
+<!-- DYNAMIC COLUMNS -->
+<div
+class="analytics-card"
+*ngFor="let col of columns"
+[style.borderTop]="'4px solid ' + col.color">
+
+<span class="material-icons dash-icon">
+{{getColumnIcon(col.id)}}
+</span>
+
+<span>{{ col.name }}</span>
+
+<h3>{{ getColumnTaskCount(col.id) }}</h3>
+
+</div>
+
+</div>
+<!-- FULL ANALYTICS DASHBOARD -->
+
+<!-- FULL ANALYTICS DASHBOARD -->
+
+<div class="analytics-modal" *ngIf="showFullAnalytics">
+
+<div class="analytics-modal-content">
+
+<div class="analytics-modal-header">
+
+<h2>Project Dashboard</h2>
+
+<button class="close-btn" (click)="closeAnalytics()">
+<span class="material-icons">close</span>
+</button>
+
+</div>
+
+<!-- SUMMARY CARDS -->
+
+<div class="analytics-grid">
+
+<div class="analytics-card total">
+<span>Total Tasks</span>
+<h3>{{ totalTasks }}</h3>
+</div>
+
+<div class="analytics-card overdue">
+<span>Overdue</span>
+<h3>{{getOverdueTasks()}}</h3>
+</div>
+
+<div class="analytics-card">
+<span>Completed</span>
+<h3>{{ completedTasks }}</h3>
+</div>
+
+<div class="analytics-card">
+<span>Progress</span>
+<h3>{{getCompletionPercent()}}%</h3>
+</div>
+
+</div>
+
+
+<!-- CHARTS -->
+
+<div class="chart-grid">
+
+<div class="chart-box">
+<h3>Tasks by Column</h3>
+<canvas id="columnChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h3>Tasks by Priority</h3>
+<canvas id="priorityChart"></canvas>
+</div>
+
+<div class="chart-box">
+<h3>Due Date Status</h3>
+<canvas id="dueChart"></canvas>
+</div>
+
+</div>
+
+
+
+
+
+<!-- COLUMN BREAKDOWN -->
+
+<div class="breakdown">
+
+<h3>Column Breakdown</h3>
+
+<div *ngFor="let col of columns" class="break-row">
+
+<span>{{col.name}}</span>
+
+<div class="break-bar">
+
+<div
+class="break-fill"
+[style.width.%]="getColumnProgressPercent(col.id)"
+[style.background]="col.color">
+</div>
+
+</div>
+
+<span>{{getColumnTaskCount(col.id)}} tasks</span>
+
+</div>
+
+</div>
+
+
+<!-- ATTENTION REQUIRED -->
+
+<div class="attention-box">
+
+<h3>⚠ Attention Required</h3>
+
+<div *ngFor="let t of tasks">
+
+<div *ngIf="isTaskOverdue(t)">
+❗ {{t.title}} (Overdue)
+</div>
+
+<div *ngIf="isTaskDueSoon(t)">
+⏳ {{t.title}} (Due Soon)
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 <!-- ================= BOARD ================= -->
 
 <div class="board"
+     *ngIf="!showFullAnalytics"
      cdkDropList
      cdkDropListOrientation="horizontal"
      (cdkDropListDropped)="dropColumn($event)">
@@ -150,10 +310,16 @@
       
 
 
-  <div class="column-title" [style.background]="col.color">
+  <div class="column-title"
+     [style.background]="col.color"
+     (dblclick)="openEditColumn(col)">
 
   <span class="column-count">
-    {{col.name | uppercase}}
+    <span class="material-icons column-icon">
+{{getColumnIcon(col.id)}}
+</span>
+
+{{col.name | uppercase}}
     <span class="count-badge">
       {{getTasksByStatus(col.id).length}}
     </span>
@@ -167,10 +333,7 @@
   <ng-container *ngIf="editingColumnId !== col.id">
 
     <div class="column-actions">
-      <button class="edit-col-btn"
-              (click)="openEditColumn(col)">
-        <span class="material-icons">edit</span>
-      </button>
+      
 
       <button class="remove-btn"
               (click)="openColumnDeleteModal(col.id)">
@@ -214,6 +377,9 @@
       
           <div *ngFor="let t of getTasksByStatus(col.id)"
      class="card"
+     [class.overdue]="isTaskOverdue(t)"
+     [class.duesoon]="isTaskDueSoon(t)"
+     [class.ontrack]="isTaskOnTrack(t)"
      cdkDrag
      [cdkDragData]="t">
 
@@ -251,7 +417,23 @@
         {{t.priority}}
   </span>
 
-  <div class="task-date">📅 {{t.date}}</div>
+  <div class="task-date">
+
+📅 {{t.date}}
+
+<span *ngIf="isTaskOverdue(t)" class="overdue-label">
+🔴 Overdue
+</span>
+
+<span *ngIf="isTaskDueSoon(t)" class="duesoon-label">
+🟡 Due Soon
+</span>
+
+<span *ngIf="isTaskOnTrack(t)" class="ontrack-label">
+🟢 On Track
+</span>
+
+</div>
 
 </div>
       <!-- EMPTY MESSAGE -->

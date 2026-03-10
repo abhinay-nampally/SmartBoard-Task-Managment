@@ -77,23 +77,38 @@
 }
 
 /* BUTTON */
-.login-box button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
+.login-box button,
+.modal-box button{
 
-  background: linear-gradient(135deg,#36d1dc,#5b86e5);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 10px;
+width:100%;
+padding:14px;
+border-radius:12px;
+border:none;
 
-  transition: 0.3s;
+background: linear-gradient(135deg,#36d1dc,#5b86e5);
+color:white;
+
+font-weight:600;
+font-size:15px;
+cursor:pointer;
+
+transition: all 0.3s ease;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,0.15);
+
 }
 
-.login-box button:hover {
-  transform: translateY(-2px);
+.login-box button:hover,
+.modal-box button:hover{
+
+transform: translateY(-3px) scale(1.02);
+
+box-shadow:
+0 12px 30px rgba(0,0,0,0.25);
+
+background: linear-gradient(135deg,#5b86e5,#36d1dc);
+
 }
 
 /* SWITCH */
@@ -125,13 +140,21 @@ font-size:18px;
 }
 
 .forgot-link{
-font-size:13px;
-color:#4f46e5;
+font-size:14px;
+color:#ffffff;
+opacity:0.9;
 cursor:pointer;
 text-align:right;
-margin-bottom:10px;
+margin-bottom:15px;
+transition:0.3s;
+font-weight:500;
 }
 
+.forgot-link:hover{
+color:#36d1dc;
+opacity:1;
+text-decoration:underline;
+}
 .modal-backdrop{
 position:fixed;
 top:0;
@@ -144,12 +167,141 @@ justify-content:center;
 align-items:center;
 }
 
+
 .modal-box{
-background:white;
-padding:20px;
-border-radius:10px;
-width:300px;
+
+background: rgba(255,255,255,0.95);
+backdrop-filter: blur(20px);
+
+padding:35px 30px;
+
+border-radius:22px;
+
+width:380px;
+
 display:flex;
 flex-direction:column;
-gap:10px;
+gap:15px;
+
+box-shadow:
+0 25px 60px rgba(0,0,0,0.35),
+0 0 0 1px rgba(255,255,255,0.4);
+
+animation: modalPop 0.4s ease;
+
+}
+.modal-box h3{
+font-size:22px;
+font-weight:600;
+color:#1e3c72;
+text-align:center;
+margin-bottom:5px;
+}
+.modal-box input{
+
+width:100%;
+
+padding:14px;
+
+border-radius:10px;
+
+border:1px solid #e0e0e0;
+
+outline:none;
+
+transition:0.3s;
+
+font-size:14px;
+
+}
+
+.modal-box input:focus{
+
+border-color:#5b86e5;
+
+box-shadow:0 0 8px rgba(91,134,229,0.3);
+
+}
+/* OTP BOXES */
+
+.otp-container{
+display:flex;
+gap:8px;
+justify-content:center;
+}
+
+.otp-box{
+width:40px;
+height:45px;
+text-align:center;
+font-size:18px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* TIMER */
+
+.timer{
+font-size:12px;
+color:#666;
+text-align:center;
+}
+
+/* PASSWORD STRENGTH */
+
+.strength-bar{
+height:6px;
+background:#eee;
+border-radius:5px;
+margin-top:5px;
+}
+
+.strength-fill{
+height:6px;
+background:linear-gradient(90deg,#ff4d4d,#ffa500,#00c853);
+border-radius:5px;
+transition:0.3s;
+}
+
+.strength-text{
+font-size:12px;
+margin-top:3px;
+}
+.otp-single{
+  width:100%;
+  padding:15px;
+  font-size:24px;
+  letter-spacing:20px;
+  text-align:center;
+  border:1px solid #ccc;
+  border-radius:10px;
+}
+@keyframes modalPop{
+
+0%{
+transform:scale(0.8);
+opacity:0;
+}
+
+100%{
+transform:scale(1);
+opacity:1;
+}
+
+}
+.otp-single{
+width:100%;
+padding:16px;
+font-size:22px;
+letter-spacing:18px;
+text-align:center;
+border-radius:12px;
+border:2px solid #e0e0e0;
+transition:0.3s;
+}
+
+.otp-single:focus{
+border-color:#5b86e5;
+box-shadow:0 0 8px rgba(91,134,229,0.4);
+outline:none;
 }
