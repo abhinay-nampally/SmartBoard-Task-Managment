@@ -8,27 +8,26 @@ const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./login/login.component')
-        .then(m => m.LoginComponent)
+      import('./login/login.component').then(m => m.LoginComponent)
   },
 
   {
     path: 'register',
     loadComponent: () =>
-      import('./register/register.component')
-        .then(m => m.RegisterComponent)
+      import('./register/register.component').then(m => m.RegisterComponent)
   },
 
   {
     path: 'board',
     loadComponent: () =>
-      import('./board/board.component')
-        .then(m => m.BoardComponent),
+      import('./board/board.component').then(m => m.BoardComponent),
     canActivate: [authGuard]
   }
 
 ];
 
 export const appConfig = {
-  providers: [provideRouter(routes)]
+  providers: [
+    provideRouter(routes)
+  ]
 };

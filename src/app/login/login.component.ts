@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component ,OnInit} from '@angular/core';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+
+declare const google:any;
 
 @Component({
   selector: 'app-login',
@@ -12,8 +14,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
-
+export class LoginComponent implements OnInit {
   email: string = '';
   password: string = '';
   showForgotModal: boolean = false;
@@ -47,9 +48,54 @@ passwordStrengthWidth: number = 0;
   // Forgot password
   
   constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {}
+  private router: Router,
+  private authService: AuthService
+  
+) {}
+
+
+
+
+
+
+  ngOnInit(){
+
+  setTimeout(() => {
+
+    google.accounts.id.initialize({
+      client_id: "64348922218-bkpuvpe04bmq2h0sd3htuhedt9sqahr1.apps.googleusercontent.com",
+      callback: (response:any)=>{
+
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+
+        const googleUser = {
+          name: payload.name,
+          email: payload.email,
+          password: "google_login"
+        };
+
+        localStorage.setItem(
+          'currentUser',
+          JSON.stringify(googleUser)
+        );
+
+        this.router.navigate(['/board']);
+
+      }
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("googleButton"),
+      {
+        theme: "outline",
+        size: "large",
+        width: 250
+      }
+    );
+
+  }, 500);
+
+}
 
   togglePassword(){
     this.showPassword = !this.showPassword;
@@ -289,6 +335,7 @@ formatOtp() {
     this.enteredOTP = this.enteredOTP.slice(0, 6);
   }
 }
+
 
 
 
