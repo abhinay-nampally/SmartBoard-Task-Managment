@@ -24,10 +24,10 @@ export class AuthService {
     return this.http.get<any[]>(`${this.baseUrl}?email=${email}`);
   }
   logout(userId: number) {
-  return this.http.patch(
-    `http://localhost:3000/users/${userId}`,
-    { isLoggedIn: false }
-  );
+  return this.http.patch(`http://localhost:3000/users/${userId}`, {
+    status: "offline",
+    lastLogout:new Date()
+  });
 }
 updateUser(id: number, userData: any) {
   return this.http.put(

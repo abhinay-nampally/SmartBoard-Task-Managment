@@ -66,9 +66,19 @@
     </button>
    <div class="user-section" (click)="toggleUserMenu()">
 
-  <div class="avatar"
-     [style.background]="getAvatarColor()">
-  {{ getUserInitial() }}
+ <div class="avatar">
+
+  <img *ngIf="userPhoto !== ''"
+       [src]="userPhoto"
+       class="avatar-img"
+       alt="profile">
+
+  <span *ngIf="userPhoto === ''"
+        [style.background]="getAvatarColor()"
+        class="avatar-letter">
+        {{ getUserInitial() }}
+  </span>
+
 </div>
 
 </div>
@@ -218,7 +228,24 @@ class="analytics-card"
 
 
 <!-- CHARTS -->
+<div class="sprint-grid">
 
+  <div class="chart-box">
+    <h3>Sprint Progress</h3>
+    <canvas id="sprintChart"></canvas>
+  </div>
+
+  <div class="chart-box">
+    <h3>Burndown Chart</h3>
+    <canvas id="burndownChart"></canvas>
+  </div>
+
+  <div class="chart-box">
+    <h3>Weekly Productivity Chat</h3>
+    <canvas id="productivityChart"></canvas>
+  </div>
+
+</div>
 <div class="chart-grid">
 
 <div class="chart-box">

@@ -1,11 +1,12 @@
-import { Component ,OnInit} from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
-
 declare const google:any;
+
+
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ declare const google:any;
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
   email: string = '';
   password: string = '';
   showForgotModal: boolean = false;
@@ -49,7 +50,7 @@ passwordStrengthWidth: number = 0;
   
   constructor(
   private router: Router,
-  private authService: AuthService
+  private authService: AuthService,
   
 ) {}
 
@@ -60,42 +61,43 @@ passwordStrengthWidth: number = 0;
 
   ngOnInit(){
 
-  setTimeout(() => {
-
-    google.accounts.id.initialize({
-      client_id: "64348922218-bkpuvpe04bmq2h0sd3htuhedt9sqahr1.apps.googleusercontent.com",
-      callback: (response:any)=>{
-
-        const payload = JSON.parse(atob(response.credential.split('.')[1]));
-
-        const googleUser = {
-          name: payload.name,
-          email: payload.email,
-          password: "google_login"
-        };
-
-        localStorage.setItem(
-          'currentUser',
-          JSON.stringify(googleUser)
-        );
-
-        this.router.navigate(['/board']);
-
-      }
-    });
-
-    google.accounts.id.renderButton(
-      document.getElementById("googleButton"),
-      {
-        theme: "outline",
-        size: "large",
-        width: 250
-      }
-    );
-
-  }, 500);
+  
 
 }
+ngAfterViewInit() {
+
+  google.accounts.id.initialize({
+    client_id: "64348922218-osfv6gsqfq2p81v2qv4hgpea0nd6v0n2.apps.googleusercontent.com",
+    callback: (response:any) => {
+
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+
+      const googleUser = {
+        id: Date.now(),
+        name: payload.name,
+        email: payload.email,
+        photo:payload.picture,
+        password: "google_login"
+      };
+
+      localStorage.setItem("currentUser", JSON.stringify(googleUser));
+      
+
+      this.router.navigate(['/board']);
+    }
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("googleButton"),
+    {
+      theme: "outline",
+      size: "large",
+      width: "100%"
+    }
+  );
+
+}
+
 
   togglePassword(){
     this.showPassword = !this.showPassword;
@@ -337,6 +339,21 @@ formatOtp() {
 }
 
 
+signInWithGoogle(){
 
+  const googleUser = {
+    name: "Google User",
+    email: "google@gmail.com",
+    password: "google_login"
+  };
+
+  localStorage.setItem(
+    "currentUser",
+    JSON.stringify(googleUser)
+  );
+
+  this.router.navigate(['/board']);
+
+}
 
 }

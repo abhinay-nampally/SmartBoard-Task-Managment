@@ -11,9 +11,11 @@ export class TaskService {
 
   constructor(private http: HttpClient) {}
 
-  getTasks(user: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}?user=${user}`);
-  }
+  getTasks(userEmail: string){
+ return this.http.get<any[]>(
+   "http://localhost:3000/tasks?user=" + userEmail
+ );
+}
 
   addTask(task: any): Observable<any> {
     return this.http.post(this.baseUrl, task);

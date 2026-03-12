@@ -72,6 +72,7 @@ showProfileUpdatePopup = false;
 profileErrorMessage: string = '';
 totalTasks:number = 0;
 completedTasks:number = 0;
+userPhoto: string = '';
 
   constructor(
   private router: Router,
@@ -91,7 +92,8 @@ completedTasks:number = 0;
   }
 
   const parsedUser = JSON.parse(user);
-  this.currentUser = parsedUser.name;
+  this.currentUser = parsedUser.email;
+  this.userPhoto = parsedUser.photo || '';
 
   // Load Tasks
   this.taskService.getTasks(this.currentUser)
@@ -416,13 +418,28 @@ logout() {
 
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-  this.authService.logout(user.id)
-    .subscribe(() => {
+  if (!user || !user.id) {
+    localStorage.removeItem('currentUser');
+    this.router.navigate(['/login']);
+    return;
+  }
+
+  this.authService.logout(user.id).subscribe({
+    next: () => {
 
       localStorage.removeItem('currentUser');
       this.router.navigate(['/login']);
 
-    });
+    },
+    error: () => {
+
+      // Even if API fails, logout locally
+      localStorage.removeItem('currentUser');
+      this.router.navigate(['/login']);
+
+    }
+  });
+
 }
 getUserInitial(): string {
   return this.currentUser ? this.currentUser.charAt(0).toUpperCase() : '';
@@ -619,10 +636,10 @@ initCharts(){
 const columnLabels = this.columns.map(c => c.name);
 const columnData = this.columns.map(c => this.getColumnTaskCount(c.id));
 
+/* COLUMN CHART */
+
 new Chart("columnChart",{
-
 type:'doughnut',
-
 data:{
 labels:columnLabels,
 datasets:[{
@@ -630,8 +647,9 @@ data:columnData,
 backgroundColor:this.columns.map(c => c.color)
 }]
 }
-
 });
+
+/* PRIORITY CHART */
 
 const priorityData = [
 this.tasks.filter(t=>t.priority==="High").length,
@@ -640,9 +658,7 @@ this.tasks.filter(t=>t.priority==="Low").length
 ];
 
 new Chart("priorityChart",{
-
 type:'doughnut',
-
 data:{
 labels:["High","Medium","Low"],
 datasets:[{
@@ -650,8 +666,9 @@ data:priorityData,
 backgroundColor:["#ef4444","#f59e0b","#10b981"]
 }]
 }
-
 });
+
+/* DUE STATUS CHART */
 
 const dueData = [
 this.getOverdueTasks(),
@@ -660,9 +677,7 @@ this.tasks.filter(t=>this.isTaskOnTrack(t)).length
 ];
 
 new Chart("dueChart",{
-
 type:'doughnut',
-
 data:{
 labels:["Overdue","Due Soon","On Track"],
 datasets:[{
@@ -670,17 +685,14 @@ data:dueData,
 backgroundColor:["#ef4444","#f59e0b","#10b981"]
 }]
 }
-
 });
 
-const weeklyData = [
-2,4,3,5,6,3,4
-];
+/* WEEKLY PROGRESS CHART */
+
+const weeklyData = [2,4,3,5,6,3,4];
 
 new Chart("weeklyChart",{
-
 type:'line',
-
 data:{
 labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
 datasets:[{
@@ -690,10 +702,83 @@ borderColor:"#6366f1",
 fill:false
 }]
 }
+});
+
+/* SPRINT PROGRESS CHART */
+
+new Chart("sprintChart",{
+type:'bar',
+data:{
+labels:["Todo","In Progress","Completed","Delivered"],
+datasets:[{
+label:"Tasks",
+data:[
+this.getColumnTaskCount('new'),
+this.getColumnTaskCount('progress'),
+this.getColumnTaskCount('completed'),
+this.getColumnTaskCount('delivered')
+],
+backgroundColor:["#3b82f6","#f59e0b","#10b981","#8b5cf6"]
+}]
+}
+});
+
+/* VELOCITY CHART */
+
+new Chart("productivityChart",{
+
+type:'line',
+
+data:{
+labels:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+
+datasets:[{
+label:"Tasks Completed",
+data:[1,2,3,2,4,1,3],
+borderColor:"#6366f1",
+backgroundColor:"rgba(99,102,241,0.2)",
+fill:true,
+tension:0.4
+}]
+
+}
+
+});
+new Chart("burndownChart",{
+
+type:'line',
+
+data:{
+labels:["Day1","Day2","Day3","Day4","Day5","Day6","Day7"],
+
+datasets:[
+
+{
+label:"Ideal Progress",
+data:[10,8,6,4,3,1,0],
+borderColor:"#9ca3af",
+borderDash:[5,5],
+fill:false
+},
+
+{
+label:"Actual Progress",
+data:[10,9,8,6,5,3,2],
+borderColor:"#ef4444",
+fill:false
+}
+
+]
+
+}
 
 });
 
+
 }
+
+/* COUNTER ANIMATION */
+
 animateValue(start:number,end:number,duration:number,callback:(value:number)=>void){
 
 let startTimestamp:any=null;
