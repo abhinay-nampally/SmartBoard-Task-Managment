@@ -435,6 +435,19 @@ class="break-fill"
    <div class="task-desc"
      [innerHTML]="highlight(t.desc)">
 </div>
+<div *ngIf="t.attachment" class="task-attachment">
+
+<img *ngIf="t.attachment.startsWith('data:image')"
+     [src]="t.attachment"
+     class="task-image">
+
+<a *ngIf="!t.attachment.startsWith('data:image')"
+   [href]="t.attachment"
+   target="_blank">
+   📎 Attachment
+</a>
+
+</div>
   <span class="badge"
         [ngClass]="{
           'high': t.priority=='High',
@@ -471,7 +484,7 @@ class="break-fill"
       <div class="empty-msg"
      *ngIf="searchText && getTasksByStatus(col.id).length === 0">
   No matching tasks found
-</div>
+ </div>
 
       <!-- ADD TASK BUTTON -->
       <button class="add-btn"
@@ -481,6 +494,27 @@ class="break-fill"
 
     </div>
   </div>
+
+</div>
+<div class="activity-panel">
+
+<h3>Activity Feed</h3>
+
+<div *ngFor="let a of activities" class="activity-item">
+
+<span class="activity-icon">
+{{a.text.slice(0,2)}}
+</span>
+
+<span class="activity-text">
+{{a.text.slice(2)}}
+</span>
+
+<span class="activity-time">
+{{a.time}}
+</span>
+
+</div>
 
 </div>
 
@@ -501,6 +535,7 @@ class="break-fill"
     </select>
 
     <input type="date" [(ngModel)]="newTask.date">
+    <input type="file" (change)="onFileSelected($event)">
 
     <div class="modal-actions">
       <button class="cancel-btn" (click)="showTaskModal=false">

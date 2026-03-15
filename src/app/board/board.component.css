@@ -25,8 +25,8 @@
 
 .progress-bar{
   width:100%;
-  height:10px;
-  border-radius:20px;
+  height:8px;
+  border-radius:10px;
   overflow:hidden;
   display:flex;
   background:#e5e7eb;
@@ -230,7 +230,7 @@ flex:3;
 
 .progress-segment{
   height:100%;
-  transition:width .5s ease;
+  transition:width 0.5s ease;
 }
 
 /* Grid */
@@ -262,17 +262,19 @@ box-shadow:
 0 12px 25px rgba(0,0,0,0.08),
 0 4px 10px rgba(0,0,0,0.04);
 
-transition:all .3s ease;
+transition:all 0.3s ease;
 
 position:relative;
 overflow:hidden;
 
 }
-
+.button{
+  cursor:pointer;
+}
 .analytics-card:hover{
 
 transform:translateY(-6px);
-box-shadow:0 18px 35px rgba(0,0,0,0.12);
+box-shadow:0 10px 25px rgba(0,0,0,0.12);
 
 }
 
@@ -534,7 +536,7 @@ gap:30px;
 margin-top:35px;
 
 }
-.avatar {
+.avatar{
   width:40px;
   height:40px;
   border-radius:50%;
@@ -542,8 +544,8 @@ margin-top:35px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-weight:bold;
-  color:white;
+  background:#e5e7eb;
+  cursor:pointer;
 }
 
 .avatar-img{
@@ -551,4 +553,50 @@ margin-top:35px;
   height:100%;
   object-fit:cover;
   border-radius:50%;
+}
+
+.avatar-letter{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  color:white;
+  font-weight:600;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.activity-panel{
+  margin-top:20px;
+  padding:15px;
+  background:#fff;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.activity-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
+}
+
+.activity-icon{
+  font-size:16px;
+}
+
+.activity-text{
+  flex:1;
+}
+
+.activity-time{
+  font-size:11px;
+  color:#888;
+}
+.task-image{
+ width:100%;
+ border-radius:8px;
+ margin-top:8px;
+ max-height:120px;
+ object-fit:cover;
 }

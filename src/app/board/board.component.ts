@@ -8,6 +8,7 @@ import { TaskService } from '../services/task.service';
 import { ColumnService } from '../services/column.service';
 import { AuthService } from '../services/auth.service';
 import Chart from 'chart.js/auto';
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-board',
@@ -42,12 +43,13 @@ export class BoardComponent implements OnInit {
   showColumnSuccessPopup = false;
   showColumnDeleteSuccessPopup = false;
   showColumnEditSuccessPopup = false;
+  activities:any[] = [];
 
   modalMode: 'add' | 'edit' = 'add';
   editingIndex: number | null = null;
   deleteIndex: number | null = null;
 
-  newTask = { title: '', desc: '', priority: 'Low', status: 'new', date: '' };
+  newTask = { title: '', desc: '', priority: 'Low', status: 'new', date: '',attachment:'' };
   newColumnName = '';
 
   columnToDeleteKey: string | null = null;
@@ -161,7 +163,7 @@ this.columnService.getColumns(this.currentUser)
 
   openAddModal(status: string) {
     this.modalMode = 'add';
-    this.newTask = { title: '', desc: '', priority: 'Low', status: status, date: '' };
+    this.newTask = { title: '', desc: '', priority: 'Low', status: status, date: '',attachment:'' };
     this.showTaskModal = true;
   }
 
@@ -177,11 +179,27 @@ this.columnService.getColumns(this.currentUser)
     .subscribe(res => {
 
       this.tasks.push(res);
+      this.addActivity("🟢 Task '"+res.title+"' created");
 
       this.showTaskModal = false;
       this.showSuccessPopup = true;
       setTimeout(() => this.showSuccessPopup = false, 2000);
     });
+}
+onFileSelected(event:any){
+
+ const file = event.target.files[0];
+
+ if(!file) return;
+
+ const reader = new FileReader();
+
+ reader.onload = () => {
+   this.newTask.attachment = reader.result as string;
+ };
+
+ reader.readAsDataURL(file);
+
 }
 
   openEditModal(index: number) {
@@ -201,6 +219,7 @@ this.columnService.getColumns(this.currentUser)
     .subscribe(res => {
 
       this.tasks[this.editingIndex!] = res;
+      this.addActivity("🟡 Task '"+res.title+"' updated");
 
       this.showTaskModal = false;
       this.showUpdatePopup = true;
@@ -223,6 +242,7 @@ this.columnService.getColumns(this.currentUser)
     .subscribe(() => {
 
       this.tasks.splice(this.deleteIndex!, 1);
+      this.addActivity("🔴 Task '"+task.title+"' deleted");
 
       this.showDeleteModal = false;
       this.showDeletePopup = true;
@@ -264,6 +284,10 @@ this.columnService.getColumns(this.currentUser)
 
     // 🔥 IMPORTANT LINE
     draggedTask.status = newStatus;
+    this.addActivity("🔵 Task '"+draggedTask.title+"' moved to "+newStatus);
+    if(newStatus === 'completed' || newStatus === 'delivered'){
+  this.launchConfetti();
+}
 
     this.taskService.updateTask(draggedTask.id, draggedTask)
       .subscribe(res => {
@@ -802,5 +826,28 @@ requestAnimationFrame(step);
 requestAnimationFrame(step);
 
 }
+launchConfetti(){
 
+  confetti({
+    particleCount: 120,
+    spread: 80,
+    origin: { y: 0.6 }
+  });
+
+}
+addActivity(message:string){
+
+  const time = new Date().toLocaleTimeString();
+
+  this.activities.unshift({
+    text: message,
+    time: time
+  });
+
+  // keep only last 10 logs
+  if(this.activities.length > 10){
+    this.activities.pop();
+  }
+
+}
 }

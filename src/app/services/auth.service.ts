@@ -30,7 +30,7 @@ export class AuthService {
   });
 }
 updateUser(id: number, userData: any) {
-  return this.http.put(
+  return this.http.patch(
     `http://localhost:3000/users/${id}`,
     userData
   );

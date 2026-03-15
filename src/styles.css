@@ -188,6 +188,7 @@ mark {
   padding:30px 40px;
   overflow-x:auto;
   align-items:stretch;
+  scroll-behavior: smooth;
 }
 .board::-webkit-scrollbar {
   height: 8px;
@@ -254,13 +255,13 @@ mark {
   padding:14px;
   border:1px solid #eceff5;
   margin-bottom:12px;
-  transition:all .2s ease;
+  transition:all 0.25s ease;
   cursor:pointer;
 }
 
 .card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  transform:translateY(-4px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.015);
 }
 
 .task-title {

@@ -68,22 +68,51 @@ ngAfterViewInit() {
 
   google.accounts.id.initialize({
     client_id: "64348922218-osfv6gsqfq2p81v2qv4hgpea0nd6v0n2.apps.googleusercontent.com",
+
     callback: (response:any) => {
 
       const payload = JSON.parse(atob(response.credential.split('.')[1]));
 
-      const googleUser = {
-        id: Date.now(),
-        name: payload.name,
-        email: payload.email,
-        photo:payload.picture,
-        password: "google_login"
-      };
+      // 🔍 Check if Google user already exists in DB
+      this.authService.login(payload.email).subscribe(users => {
 
-      localStorage.setItem("currentUser", JSON.stringify(googleUser));
-      
+        if(users.length > 0){
 
-      this.router.navigate(['/board']);
+          // Existing user
+          const user = users[0];
+
+          localStorage.setItem(
+            "currentUser",
+            JSON.stringify(user)
+          );
+
+          this.router.navigate(['/board']);
+
+        } else {
+
+          // New Google user → register in DB
+          const newUser = {
+            name: payload.name,
+            email: payload.email,
+            password: "google_login",
+            photo: payload.picture,
+            isLoggedIn: true
+          };
+
+          this.authService.register(newUser).subscribe(res => {
+
+            localStorage.setItem(
+              "currentUser",
+              JSON.stringify(res)
+            );
+
+            this.router.navigate(['/board']);
+          });
+
+        }
+
+      });
+
     }
   });
 
