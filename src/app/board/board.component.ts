@@ -95,7 +95,8 @@ userPhoto: string = '';
 
   const parsedUser = JSON.parse(user);
   this.currentUser = parsedUser.email;
-  this.userPhoto = parsedUser.photo || '';
+  this.userPhoto = parsedUser.photo || this.getUserInitialAvatar();
+  console.log(this.userPhoto);
 
   // Load Tasks
   this.taskService.getTasks(this.currentUser)
@@ -849,5 +850,8 @@ addActivity(message:string){
     this.activities.pop();
   }
 
+}
+getUserInitialAvatar() {
+  return `https://ui-avatars.com/api/?name=${this.currentUser}&background=6366f1&color=fff`;
 }
 }

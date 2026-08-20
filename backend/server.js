@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
@@ -13,9 +14,9 @@ let otpStore = {};
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "abhinaynampally3889@gmail.com",
-    pass: "otth iogv soyn qmxn"
-  }
+  user: process.env.EMAIL_USER,
+  pass: process.env.EMAIL_PASSWORD
+}
 });
 
 app.post("/send-otp", (req, res) => {

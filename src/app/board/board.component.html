@@ -68,11 +68,11 @@
 
  <div class="avatar">
 
-  <img *ngIf="userPhoto !== ''"
-       [src]="userPhoto"
-       class="avatar-img"
-       alt="profile">
-
+  <img *ngIf="userPhoto"
+     [src]="userPhoto"
+     class="avatar-img"
+     alt="profile"
+     (error)="userPhoto=''">
   <span *ngIf="userPhoto === ''"
         [style.background]="getAvatarColor()"
         class="avatar-letter">
@@ -319,14 +319,22 @@ class="break-fill"
 </div>
 
 </div>
+</div>
+
+
 <!-- ================= BOARD ================= -->
 
-<div class="board"
-     *ngIf="!showFullAnalytics"
-     cdkDropList
-     cdkDropListOrientation="horizontal"
-     (cdkDropListDropped)="dropColumn($event)">
+<div class="columns-section" *ngIf="!showFullAnalytics">
 
+  <div class="section-header">
+    <h2>Task Columns</h2>
+    <p>Manage and track your tasks by status</p>
+  </div>
+
+  <div class="board"
+       cdkDropList
+       cdkDropListOrientation="horizontal"
+       (cdkDropListDropped)="dropColumn($event)">
   <div *ngFor="let col of columns"
        class="column"
        cdkDrag>
@@ -342,15 +350,14 @@ class="break-fill"
      (dblclick)="openEditColumn(col)">
 
   <span class="column-count">
-    <span class="material-icons column-icon">
-{{getColumnIcon(col.id)}}
-</span>
 
-{{col.name | uppercase}}
-    <span class="count-badge">
-      {{getTasksByStatus(col.id).length}}
-    </span>
+  {{col.name | uppercase}}
+
+  <span class="count-badge">
+    {{getTasksByStatus(col.id).length}}
   </span>
+
+</span>
 
   <span class="percent">
     {{ getColumnProgressPercent(col.id) }}%
@@ -496,25 +503,35 @@ class="break-fill"
   </div>
 
 </div>
+</div>
 <div class="activity-panel">
 
-<h3>Activity Feed</h3>
+  <div class="section-header activity-header">
+    <div>
+      <h2>Activity Feed</h2>
+      <p>Recent task and project activity</p>
+    </div>
+  </div>
 
-<div *ngFor="let a of activities" class="activity-item">
+  <div *ngFor="let a of activities" class="activity-item">
 
-<span class="activity-icon">
-{{a.text.slice(0,2)}}
-</span>
+    <span class="activity-icon">
+      {{a.text.slice(0,2)}}
+    </span>
 
-<span class="activity-text">
-{{a.text.slice(2)}}
-</span>
+    <span class="activity-text">
+      {{a.text.slice(2)}}
+    </span>
 
-<span class="activity-time">
-{{a.time}}
-</span>
+    <span class="activity-time">
+      {{a.time}}
+    </span>
 
-</div>
+  </div>
+
+  <div class="empty-activity" *ngIf="activities.length === 0">
+    No recent activity
+  </div>
 
 </div>
 
