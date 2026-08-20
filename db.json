@@ -30,6 +30,24 @@
       "photo": "https://lh3.googleusercontent.com/a/ACg8ocI0t6aCdsRtW30BV4YtuSQbws3noc9cgp7Rmw2bb-fwOMRQwu8=s96-c",
       "isLoggedIn": true,
       "id": 4
+    },
+    {
+      "name": "Abhinay Nampally",
+      "email": "abhinaynampally@gmail.com",
+      "password": "Abhi@7780",
+      "isLoggedIn": false,
+      "id": 5,
+      "status": "offline",
+      "lastLogout": "2026-08-20T17:37:13.078Z"
+    },
+    {
+      "name": "Abhinay Nampally",
+      "email": "nampallyabhinay6@gmail.com",
+      "password": "Abhi@7780",
+      "isLoggedIn": false,
+      "id": 6,
+      "status": "offline",
+      "lastLogout": "2026-08-20T17:59:38.460Z"
     }
   ],
   "tasks": [
@@ -137,6 +155,17 @@
       "user": "vaishnavikomera203@gmail.com",
       "order": 0,
       "id": 18
+    },
+    {
+      "title": "a",
+      "desc": "abc",
+      "priority": "High",
+      "status": "delivered",
+      "date": "",
+      "attachment": "",
+      "user": "abhinaynampally@gmail.com",
+      "order": 0,
+      "id": 19
     }
   ],
   "columns": [
@@ -151,6 +180,12 @@
       "name": "Testing",
       "color": "#ef4444",
       "user": "vaishnavikomera203@gmail.com"
+    },
+    {
+      "id": "testing1787247423784",
+      "name": "testing",
+      "color": "#10b981",
+      "user": "abhinaynampally@gmail.com"
     }
   ]
 }

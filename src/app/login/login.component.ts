@@ -177,40 +177,66 @@ ngAfterViewInit() {
     this.showForgotModal = true;
   }
 
-  
   sendOTP() {
-    console.log("Send OTP clicked");
 
- fetch("https://smartboard-task-management.onrender.com/send-otp",  {
+  console.log("Send OTP clicked");
+
+  fetch("https://smartboard-task-management.onrender.com/send-otp", {
+
     method: "POST",
+
     headers: {
       "Content-Type": "application/json"
     },
+
     body: JSON.stringify({
       email: this.resetEmail
     })
+
   })
-  .then(res => res.json())
+
+  .then(async res => {
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to send OTP");
+    }
+
+    return data;
+
+  })
+
   .then(data => {
- Swal.fire({
-  icon: 'success',
-  title: 'OTP Sent',
-  text: 'Check your email for the verification code',
-  confirmButtonText: 'Got it',
-  confirmButtonColor: '#5b86e5',
-  background: '#ffffff',
-  width: '380px',
-  padding: '2em',
-  showClass: {
-    popup: 'animate__animated animate__zoomIn'
-  },
-  hideClass: {
-    popup: 'animate__animated animate__zoomOut'
-  }
-});
-  this.otpSent = true;
-  this.startTimer();
-});
+
+    console.log("Server response:", data);
+
+    Swal.fire({
+      icon: "success",
+      title: "OTP Sent",
+      text: "Check your email for the verification code",
+      confirmButtonText: "Got it",
+      confirmButtonColor: "#5b86e5"
+    });
+
+    this.otpSent = true;
+    this.startTimer();
+
+  })
+
+  .catch(error => {
+
+    console.error("Send OTP error:", error);
+
+    Swal.fire({
+      icon: "error",
+      title: "OTP Failed",
+      text: "Unable to send OTP. Please try again.",
+      confirmButtonColor: "#5b86e5"
+    });
+
+  });
+
 }
 verifyOTP() {
 
