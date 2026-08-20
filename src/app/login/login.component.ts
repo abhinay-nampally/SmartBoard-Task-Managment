@@ -181,7 +181,7 @@ ngAfterViewInit() {
   sendOTP() {
     console.log("Send OTP clicked");
 
-  fetch("http://localhost:5000/send-otp", {
+ fetch("https://smartboard-task-management.onrender.com/send-otp",  {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -214,7 +214,7 @@ ngAfterViewInit() {
 }
 verifyOTP() {
 
-  fetch("http://localhost:5000/verify-otp", {
+  fetch("https://smartboard-task-management.onrender.com/verify-otp", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
