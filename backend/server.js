@@ -36,7 +36,6 @@ app.use(cors({
 }));
 
 // Handle preflight requests
-app.options("*", cors());
 
 let otpStore = {};
 
